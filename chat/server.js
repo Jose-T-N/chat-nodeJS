@@ -73,7 +73,7 @@ io.on('connection', socket => {
     socket.on('sendMessage', data => {
         (async () => {
             const result = await db.addMessage(data.userID, data.userSendID, data.message, dt.dateTime());
-            console.log(result);
+            //console.log(result);
 
             if (result === 'ok') {
                 socket.emit('send-now', data);
@@ -81,7 +81,7 @@ io.on('connection', socket => {
                 for (let i = 0; i < users_connected.length; i++) {
                     if (data.userSendID === users_connected[i].user) {
                         await socket.broadcast.to(users_connected[i].id).emit('send-now', data);
-                        console.log(users_connected[i].id + ' ' + users_connected[i].user);
+                        //console.log(users_connected[i].id + ' ' + users_connected[i].user);
                         break;
                     }
                 }

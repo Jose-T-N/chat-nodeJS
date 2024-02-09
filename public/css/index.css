@@ -1,0 +1,22 @@
+.main{
+    display: flex;
+    width: 400px;
+    height: 150px;
+    top: 30%;
+}
+form {
+    width: 90%;
+
+}
+form input{
+    width: 90%;
+    margin: 2%;
+    font-size: large;
+}
+
+form button{
+    margin-left: 2%;
+}
+form h3{
+    margin: 2% 3%;
+}

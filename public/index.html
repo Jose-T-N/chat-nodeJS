@@ -1,0 +1,110 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Login</title>
+
+    <script type="text/javascript" src="jquery/dist/jquery.js"></script>
+
+    <link rel="stylesheet" href="css/chat.css">
+    <link rel="stylesheet" href="css/index.css">
+
+
+</head>
+
+<body>
+    <div class="main">
+        <div class="login">
+            <form id="login">
+                <h3>login</h3>
+                <input type="text" name="user" placeholder="usuário">
+                <input type="password" name="passwd" placeholder="senha"><br>
+                <button type="submit">entrar</button>
+            </form>
+        </div>
+        <div class="sign-up">
+            <form id="sign-up">
+                <h3>sign-up</h3>
+                <input type="text" name="user" placeholder="usuário">
+                <input type="password" name="passwd" placeholder="senha"><br>
+                <button type="submit">criar</button>
+            </form>
+        </div>
+    </div>
+    <script type="text/javascript" src="/socket.io/socket.io.js"></script>
+    <script type="text/javascript">
+        var socket = io();
+
+        socket.emit('page-inform', {page:'index'});
+
+        //login
+        $('#login').submit(function (event) {
+            event.preventDefault();
+
+            var user = $('#login input[name=user]').val();
+            var passwd = $('#login input[name=passwd]').val();
+
+            if (user.length && passwd.length) {
+                var messageObject = {
+                    user: user.toUpperCase(),
+                    passwd: passwd
+                }
+            }
+
+            socket.emit('authentication', messageObject);
+
+        });
+        //sign-up
+        $('#sign-up').submit(function (event) {
+            event.preventDefault();
+
+            var user = $('#sign-up input[name=user]').val();
+            var passwd = $('#sign-up input[name=passwd]').val();
+
+            if (user.length && passwd.length) {
+                let messageObject = {
+                    user: user.toUpperCase(),
+                    passwd: passwd
+                }
+
+                console.log(messageObject);
+
+                socket.emit('create-user', messageObject);
+            }
+
+        });
+        //receved message
+        socket.on('result', function (message) {
+            if (message.msg === 'ok') {
+                /*send message with username
+                let messageObject = {
+                    action: 'username',
+                    user: user
+                }*/
+
+                //socket.emit('sendMessage', messageObject);
+                localStorage.setItem("user", $('#login input[name=user]').val().toUpperCase());
+                $(location).attr('href', 'chat.html');
+            }
+            else if (message.msg === 'passwd') {
+                alert('senha incorreta');
+            }
+            else if (message.msg === 'user') {
+                alert('usuário inexistente');
+            }
+            else if (message.msg === 'user-create') {
+                alert('usuário criado');
+                localStorage.setItem("user", $('#sign-up input[name=user]').val().toUpperCase());
+                $(location).attr('href', 'chat.html');
+            }
+            else if (message.msg === 'user-exists') {
+                alert('Já esiste um usuário com esse nome');
+            }
+        })
+    </script>
+</body>
+
+</html>

@@ -1,0 +1,316 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Chat</title>
+
+    <script type="text/javascript" src="jquery/dist/jquery.js"></script>
+
+    <link rel="stylesheet" href="css/chat.css">
+
+</head>
+
+<body>
+    <div class="main">
+
+        <div class="senders-div">
+            <ul class="senders">
+            </ul>
+        </div>
+
+
+        <form id="chat">
+            <div class="header">
+                <img src="src/back.png" class="back">
+                <img src="src/user-icon.png" class="user-img">
+                <h3>Chat com:&nbsp;<span></span></h3>
+            </div>
+            <div class="messages">
+            </div>
+            <div class="baseboard">
+                <textarea type="text" name="message" placeholder="Digite sua menssagem"
+                    class="input-message"></textarea>
+                <button type="submit">Enviar</button>
+            </div>
+        </form>
+
+        <!--<div class="messages-another-users">
+            <div class="another-message"></div>
+        </div>-->
+
+    </div>
+    <script type="text/javascript" src="/socket.io/socket.io.js"></script>
+    <script type="text/javascript">
+        var socket = io();
+        var user = localStorage.getItem("user");
+        var cont = 0;
+        var all_users = [];
+        var select = document.getElementById('usersend');
+        var idMessage = '';
+        var msgOutersUsers = [];
+        var contMsg = 0;
+        var currentSender = "";
+
+        var states = ['selec-sender', 'messages'];
+        var state = states[0];
+
+        socket.emit('page-inform', { page: 'chat', user: user });
+
+        if (user.length == 0 || user === null) {
+            $(location).attr('href', 'index.html');
+        }
+
+        //console.log(user);
+
+        //set screen when resize
+        window.onresize = function () {
+            if (window.innerWidth > 620) {
+                $('.senders-div').css('display', 'block');
+                $('#chat').css('display', 'block');
+            }
+            if (window.innerWidth < 620) {
+                if (state === states[0]) {
+                    $('.senders-div').css('display', 'block');
+                    $('#chat').css('display', 'none');
+                }
+                if (state === states[1]) {
+                    $('.senders-div').css('display', 'none');
+                    $('#chat').css('display', 'block');
+                }
+            }
+        }
+
+        //back botton
+        $('.back').on('click', () => {
+            $('.senders-div').css('display', 'block');
+            $('#chat').css('display', 'none');
+
+            state = states[0];
+
+        })
+
+        //
+        //the function that put messages on the screen
+        //
+        //
+        function renderMessage(message) {
+            contMsg++;
+            if (message.userID === user) {
+                $('.messages').append(
+                    '<section class="message-this">' +
+                    '<div class="content">' +
+                    '<img src="src/user-icon.png"/>' +
+                    '<div class="message-box">' +
+                    '<div class="message">' + message.message + '</div>' +
+                    '</div>' +
+                    '<div class="user"> você </div>' +
+                    '</div>' +
+                    '</section>');
+            }
+            else {
+                $('.messages').append(
+                    '<section class="message-another">' +
+                    '<div class="content">' +
+                    '<img src="src/user-icon.png"/>' +
+                    '<div class="message-box">' +
+                    '<div class="message">' + message.message + '</div>' +
+                    '</div>' +
+                    '<div class="user">' + message.userID + '</div>' +
+                    '</div>' +
+                    '</section>');
+            }
+            let messagesDiv = document.querySelector('.messages');
+            messagesDiv.scrollTop = messagesDiv.scrollHeight;
+            
+            console.log(message.id)
+
+            //Muda o status da menssagem com visto
+            newStatus = {id:message.id,status:3}
+            socket.emit('setStatus', newStatus);
+
+        }
+        //put information on div messages-another-users
+        function anotherMessages(message) {
+            //caso message for diferente de null
+            //então o array msgOuterUsers é preenchido
+            if (message !== null) {
+                msgOutersUsers.push(message);
+            }
+            //A div Another-messages e esvasiada
+            // $('.another-message').empty();
+            
+            for (i = 0; i < all_users.length; i++) {
+                let c = 0;
+                for (j = 0; j < msgOutersUsers.length; j++) {
+                    if (msgOutersUsers[j].userID === all_users[i]) {
+                        c++;
+                    }
+                }
+                if (c != 0) {
+                    //Informa novas menssagens
+                    let message = '<p>'+c+'</p>'
+                    let selector = '.messages-another-users'
+                    $('div[data-name="'+all_users[i]+'"]').css("display","block");
+                    $('div[class=another-message]').append(
+                        message
+                    )
+                    console.log(c + " bb");
+                        //'<strong>' + all_users[i] + '</strong> te enviou ' + c + ' messagen(s)<br>');
+                }
+            }
+        }
+
+        //config the senders section
+        socket.on('senders', function (message) {
+            $('#usersend').empty();
+            let c = 0;
+            //create list user and pass to <select>
+            //false if user null
+            for (message of message) {
+                //Tags do remetente
+                let html = '<li>'+
+                            '<img src="src/user-icon.png" class="img">'
+                            +'<h3>' 
+                            + message.user 
+                            + '</h3>'
+                            +'<div class="messages-another-users" data-name="'+message.user+'" style="display: none">'
+                            +'<div class="another-message"></div>'
+                            +'</div>'
+                            +'</li>';
+                if (message.user !== user) {
+                    $(".senders").append(html);
+                    all_users.push(message.user);
+                }
+            }
+            //case alone exists one user
+            if ($('.senders li').length == 0) {
+                $(".senders").append('<h3 class="msg">Você é o único usuário no banco de dados.&nbsp;' +
+                    'Por causa do login automatico você tem que abri uma aba privada ou em outro dispositivo&nbsp;' +
+                    'para poder criar outro usúario.</h3 >');
+            }
+            currentSender = all_users[0];
+            $('.senders li').each(function (index) {
+                if (index == 0) {
+                    $(this).css('background', 'rgba(0, 0, 0, 0.1)');
+                }
+            })
+            $('.header span').append(currentSender);
+            $(".senders li").on('click', liClick);
+            //Desativa a caixa vermelha de outras menssagens 
+        });
+        //capiture the messages
+        socket.on('messages', function (message) {
+            for (message of message) {
+                if (user.length != 0) {
+                    //case id of message equals to id previous message, so return false
+                    //if (message.id !== idMessage) {
+                    console.log(message);
+                    if (message.userID === currentSender ||
+                        (message.userID === user && message.userSendID === currentSender)) {
+                        renderMessage(message);
+                    }
+                    else {
+                        anotherMessages(message);
+                    }
+                    idMessage = message.id;
+                    //}
+                }
+                //pos +=1;
+            }
+        });
+        //capiture the messages that send now
+        socket.on('send-now', function (message) { 
+            //Verifica se pro remetente atual
+            if ((message.userID === currentSender && message.userSendID === user) ||
+                (message.userID === user && message.userSendID === currentSender)) {
+                    renderMessage(message);
+            }
+            else {
+                console.log("foi")
+                anotherMessages(message);
+            }
+            idMessage = message.id;
+        });
+        //when the button submit is click
+        $('#chat').submit(function (event) {
+            event.preventDefault();
+
+            //captch the digited informations
+            var message = $('textarea[name=message]').val();
+            var usersend = currentSender;
+
+            $('textarea[name=message]').val('');
+
+            //console.log(usersend);
+
+            //create messagens
+            if (user.length && message.length) {
+                let messageObject = {
+                    userID: user,
+                    message: message,
+                    userSendID: usersend
+                }
+                //renderMessage(messageObject);
+                socket.emit('sendMessage', messageObject);
+            }
+        });
+
+        socket.on('new-sender', (message) => {
+            alert('novo usuario adicionado');
+            if ($('.senders .msg').length > 0) { $(".senders").empty() };
+            $(".senders").append('<li><img src="src/user-icon.png" class="img"></div><h3>' + message + '</h3></li>');
+
+            $('.senders li').off('click');
+            $('.senders li').on('click', liClick);
+
+        });
+
+        //click event of sendes list
+        function liClick() {
+
+            //console.log('sdfg');
+
+            $(".senders li").removeAttr('style');
+
+
+            $(this).css('background', 'rgba(0, 0, 0, 0.1)');
+
+            $('.messages').empty();
+
+            currentSender = $(this).text();
+            $('.header span').empty();
+            $('.header span').append(currentSender)
+
+            let messageObject = {
+                userID: user,
+                userSendID: $(this).text()
+            }
+            socket.emit('findMessage', messageObject);
+
+            for (i = 0; i < msgOutersUsers.length; i++) {
+                if (msgOutersUsers[i].userID === $(this).text()) {
+                    msgOutersUsers.splice(i);
+                }
+            }
+
+            state = states[1];
+
+            if ($(window).width() < 620) {
+                $('.senders-div').css('display', 'none');
+                $('#chat').css('display', 'block');
+
+            }
+
+            anotherMessages(null);
+
+        }
+
+    </script>
+
+
+</body>
+
+</html>

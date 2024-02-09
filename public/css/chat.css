@@ -1,0 +1,337 @@
+.main {
+    position: absolute;
+    left: 50%;
+    top: 10%;
+    transform: translate(-50%, 0);
+    width: 600px;
+    height: 400px;
+    border: 3px solid #777;
+    display: block;
+    box-shadow: 0 0 1em gold;
+    background-image: linear-gradient(to right, aqua , #5a5ae6);
+    padding-left: 2%;
+}
+
+.senders-div{
+    height: 87%;
+    top:6%;
+    position: absolute;
+    left: 2%;
+    border: 1px solid #777;
+    border-radius: 10px;
+    width: 25%;
+    background:rgba(0, 0, 0, 0.3);
+}
+
+.senders-div .senders{
+    padding: 0;
+    overflow: auto;
+    height: 90%;
+
+}
+
+/*scroll*/
+
+.senders-div .senders::-webkit-scrollbar {
+    width: 5px;
+}
+
+.senders-div .senders::-webkit-scrollbar-track {
+    background: rgba(0, 0, 0, 0.3); 
+    border-radius: 10px;
+}
+
+.senders-div .senders::-webkit-scrollbar-thumb {
+    border-radius: 10px;
+    background: black;
+}
+
+/*and scroll*/
+.senders-div .senders .msg{
+    padding: 10px;
+}
+
+.senders-div .senders li{
+    display: block;
+    position: relative;
+    list-style-type: none;
+    margin-bottom: 5px;
+    max-width: 120px;
+    padding: 30px 60px;
+    cursor: pointer;
+}
+
+.senders-div .senders li .img{
+    position: absolute;
+    width: 40px;
+    border: 1px solid #fff;
+    border-radius: 25px;
+    left: 6%;
+    top: 5%;
+}
+
+.senders-div .senders li h3{
+    position: absolute;
+    top: -20%;
+    text-decoration: none;
+    color:#fff;
+}
+
+.senders-div .senders li:hover{
+    background:rgba(0, 0, 0, 0.1);
+}
+
+/*Outras Menssagens*/
+.messages-another-users{
+    width: 20px;
+    height: 20px;
+    border-radius: 50px;
+    background-color: #f00;
+}
+.messages-another-users p{
+    padding: 0;
+    margin: 0;
+    text-align: center;
+}
+/*Tela de chat*/
+#chat {
+    display: block;
+    border: 1px solid #777;
+    border-radius: 10px;
+    align-items: center;
+    background:rgba(0, 0, 0, 0.3);
+    width: 65%;
+    height: 90%;
+    padding: 0;
+    position: absolute;
+    left: 33%;
+    top:5%;
+}
+
+#chat .baseboard{
+    position: relative;
+    display: block;
+    height: 19%;
+    border-radius: 10px;
+    background:rgba(0, 0, 0, 0.1);
+}
+
+#chat .input-message{
+    position:absolute;
+    top: 25%;
+    left: 2%;
+    width: 75%;
+    height: 30%;
+    resize: none;
+    font-size: large;
+    background:rgba(0, 0, 0, 0.3);
+    border-radius: 10px;
+    color:#fff;
+    padding: 2% 2%;
+}
+
+#chat button{
+    position:absolute;
+    top: 30%;
+    left: 83%;
+}
+
+#chat .header{
+    top:0%;
+    background:rgba(0, 0, 0, 0.1);
+    height: 15%;
+    margin-top: -0%;
+    margin-bottom: -5%;
+    position: relative;
+}
+
+#chat .header .user-img{
+    width: 40px;
+    position: absolute;
+    border: 1px solid #fff;
+    border-radius: 25px;
+    top: 10%;
+    left: 10px;
+}
+
+#chat .header .back{
+    display: none;
+}
+
+#chat .header h3{
+    position: absolute;
+    left: 15%;
+    color:#fff;
+}
+
+#chat .messages {
+    display: block;
+    left: 0;
+    top: 0;
+    overflow-y: auto;
+    height: 200px;
+    width: 94%;
+    margin-top: 20px;
+    padding-left: 20px;
+    padding-bottom: 20px;
+    padding-top: 20px;
+}
+
+/*
+scroll
+*/
+#chat .messages::-webkit-scrollbar {
+    width: 5px;
+}
+
+#chat .messages::-webkit-scrollbar-track {
+    background: rgba(0, 0, 0, 0.3); 
+    border-radius: 10px;
+}
+
+#chat .messages::-webkit-scrollbar-thumb {
+    border-radius: 10px;
+    background: black;
+}
+
+/*
+messages
+*/
+
+#chat .messages .message-this{
+    position: relative;
+    display: flex;
+    flex-wrap: wrap;
+    align-content: flex-end;
+    margin: 10px;
+    flex-direction: column;
+    width: 90%;
+    height: 50%;
+}
+
+#chat .messages .message-this .content{
+    position: relative;
+    margin-left: 0;
+    width: 200px;
+}
+
+#chat .messages .message-this .content img{
+    position: absolute;
+    width: 30px;
+    top: 11%;
+    left:90%;
+    border: 1px solid #fff;
+    border-radius: 25px;
+}
+#chat .messages .message-this .content .user {
+    position: absolute;
+    color:#fff;
+    left: 65%;
+}
+
+#chat .messages .message-this .content .message-box{
+    display: flex;
+    flex-direction: row-reverse;
+    width: 85%;
+}
+
+#chat .messages .message-this .content .message-box .message{
+    border-radius: 25px;
+    padding: 10px;
+    background: rgba(100, 250, 100, 0.9);
+    width: fit-content;
+    max-width: 200px;
+    height: fit-content;
+}
+
+/* 
+anoter user
+*/
+
+#chat .messages .message-another{
+    position: relative;
+    display: flex;
+    flex-wrap: wrap;
+    align-content: flex-start;
+    margin: 10px;
+    flex-direction: column;
+    width: 90%;
+    height: 50%;
+}
+
+#chat .messages .message-another .content{
+    position: relative;
+    margin-left: 0;
+    width: 200px;
+}
+
+#chat .messages .message-another .content img{
+    position: absolute;
+    width: 30px;
+    top: 11%;
+    left:-10%;
+    border: 1px solid #fff;
+    border-radius: 25px;
+}
+#chat .messages .message-another .content .user {
+    position: absolute;
+    color:#fff;
+    left: 15%;
+}
+
+#chat .messages .message-another .content .message-box{
+    margin-left: 10%;
+    width: 85%;
+}
+
+#chat .messages .message-another .content .message-box .message{
+    border-radius: 25px;
+    padding: 10px;
+    background: rgba(124, 124, 255,1);
+    width: fit-content;
+    max-width: 200px;
+    height: fit-content;
+}
+
+/*screen*/
+
+@media screen and (max-width: 620px) {
+
+    .main{
+        width: 400px;
+    }
+
+    #chat{
+        display: none;
+        width: 96%;
+        left: 2%;
+    }
+
+    #chat .header .user-img{
+        left: 10%;
+    }
+
+    #chat .header .back{
+        display: block;
+        width: 40px;
+        position: absolute;
+        top: 10%;
+        left: 0;
+        cursor: pointer;
+    }   
+
+    #chat .header h3{
+        left: 22%;
+    }
+
+    .senders-div{
+        width: 96%;
+    }
+    .senders-div .senders li{
+        max-width: 96%;
+        width: 69%;
+    }
+    .senders-div .senders li h3{
+        left: 20%;
+    }
+}

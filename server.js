@@ -83,16 +83,15 @@ io.on('connection', socket => {
         (async () => {
             //status 1 igual a salvo no servidor
             const result = await db.addMessage(data.userID, data.userSendID, data.message, dt.dateTime(),1);
-            console.log(result);
-
+            //console.log(result);
             if (result === 'ok') {
                 data = await db.findSpecificMsg(data.userID, data.userSendID, data.message, dt.dateTime(),1);
                 socket.emit('send-now', data[0]);
-
+                //percorre todos os usuário
                 for (let i = 0; i < users_connected.length; i++) {
-                    if (data.userSendID === users_connected[i].user) {
+                    //envia a menssage para o destinatario
+                    if (data[0].userSendID === users_connected[i].user) {
                         await socket.broadcast.to(users_connected[i].id).emit('send-now', data[0]);
-                        //console.log(users_connected[i].id + ' ' + users_connected[i].user);
                         break;
                     }
                 }
@@ -168,7 +167,6 @@ io.on('connection', socket => {
             }
         })()
     });
-
 })
 
 server.listen(3000, function () {

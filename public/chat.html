@@ -124,8 +124,6 @@
             }
             let messagesDiv = document.querySelector('.messages');
             messagesDiv.scrollTop = messagesDiv.scrollHeight;
-            
-            console.log(message.id)
 
             //Muda o status da menssagem com visto
             newStatus = {id:message.id,status:3}
@@ -151,14 +149,16 @@
                 }
                 if (c != 0) {
                     //Informa novas menssagens
+                    $('div[data-name="'+all_users[i]+'"]').empty();
                     let message = '<p>'+c+'</p>'
                     let selector = '.messages-another-users'
                     $('div[data-name="'+all_users[i]+'"]').css("display","block");
-                    $('div[class=another-message]').append(
+                    $('div[data-name="'+all_users[i]+'"]').append(
                         message
                     )
-                    console.log(c + " bb");
-                        //'<strong>' + all_users[i] + '</strong> te enviou ' + c + ' messagen(s)<br>');
+                    //Muda o status da menssagem com visto
+                    newStatus = {id:message.id,status:2}
+                    socket.emit('setStatus', newStatus);
                 }
             }
         }
@@ -207,7 +207,7 @@
                 if (user.length != 0) {
                     //case id of message equals to id previous message, so return false
                     //if (message.id !== idMessage) {
-                    console.log(message);
+                    //console.log(message);
                     if (message.userID === currentSender ||
                         (message.userID === user && message.userSendID === currentSender)) {
                         renderMessage(message);
@@ -225,11 +225,10 @@
         socket.on('send-now', function (message) { 
             //Verifica se pro remetente atual
             if ((message.userID === currentSender && message.userSendID === user) ||
-                (message.userID === user && message.userSendID === currentSender)) {
+                (message.userID === user && message.userSendID === currentSender)){
                     renderMessage(message);
             }
             else {
-                console.log("foi")
                 anotherMessages(message);
             }
             idMessage = message.id;
@@ -279,25 +278,25 @@
             $(this).css('background', 'rgba(0, 0, 0, 0.1)');
 
             $('.messages').empty();
-
-            currentSender = $(this).text();
+            //Salva o nome do destinatario selecionado
+            currentSender = $(this).children("h3").text();
             $('.header span').empty();
             $('.header span').append(currentSender)
 
             let messageObject = {
                 userID: user,
-                userSendID: $(this).text()
+                userSendID: currentSender
             }
             socket.emit('findMessage', messageObject);
-
+            //Esvasia o array de outros usuários
             for (i = 0; i < msgOutersUsers.length; i++) {
-                if (msgOutersUsers[i].userID === $(this).text()) {
+                if (msgOutersUsers[i].userID === currentSender) {
                     msgOutersUsers.splice(i);
                 }
             }
 
             state = states[1];
-
+            //Fecha a parte de remetentes e abre a parte de messagens
             if ($(window).width() < 620) {
                 $('.senders-div').css('display', 'none');
                 $('#chat').css('display', 'block');

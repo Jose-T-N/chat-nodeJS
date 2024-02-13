@@ -9,6 +9,11 @@
  * 2 - sendNow - Cliente
  */
 
+//Rotina d busca de menssagms
+/**
+ * 1 - findMesage - servidor
+ */
+
 const express = require('express');
 const path = require('path');
 const dt = require('./DataTime');
@@ -104,23 +109,36 @@ io.on('connection', socket => {
             //console.log(users_connected);
             if (data.page === 'chat') {
                 let messages;
+                let newMessages;
 
                 users_connected.push({ id: socket.id, user: data.user });
-
+                //Envia os distinatatios para a pagina do cliente
                 const all_user = await db.allUser();
                 await socket.emit('senders', all_user);
-
+                //Pesquisas as menssagens
+                //se o usuário atua for o primeiro
                 if (all_user[0].user === data.user) {
+                    //Verifica se só tem um usuário no servidor
                     if (all_user.length == 1) {
+                        newMessages = await db.findByStatus(data.user);
                         messages = await db.findMessageforUser(data.user, all_user[0].user);
+                        console.log(newMessages);
                     }
                     else {
+                        newMessages = await db.findByStatus(data.user);
                         messages = await db.findMessageforUser(data.user, all_user[1].user);
+                        console.log(newMessages);
                     }
                 } else {
+                    newMessages = await db.findByStatus(data.user);
                     messages = await db.findMessageforUser(data.user, all_user[0].user);
+                    console.log(newMessages);
                 }
+                //envia as menssagens para a pagina do cliente
                 socket.emit('messages', messages);
+                //Envia as menssagens não lidas para a pagina do cliente
+                socket.emit('newMessages', newMessages);
+                
             } else if (data.page === 'index') {
                 //user = '';
                 //console.log(socket.id);
@@ -154,6 +172,13 @@ io.on('connection', socket => {
     socket.on('setStatus', data => {
         (async () => {
             let messages = await db.setStatus(data.id,data.status);
+        })()
+    });
+
+    //Prrocra per status
+    socket.on('findByStatus', data => {
+        (async () => {
+            let messages = await db.findByStatus(data.user);
         })()
     });
 

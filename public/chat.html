@@ -124,10 +124,11 @@
             }
             let messagesDiv = document.querySelector('.messages');
             messagesDiv.scrollTop = messagesDiv.scrollHeight;
-
-            //Muda o status da menssagem com visto
-            newStatus = {id:message.id,status:3}
-            socket.emit('setStatus', newStatus);
+                if(message.userSendID === user && message.message_status == 2){
+                    //Muda o status da menssagem com visto
+                    newStatus = {id:message.id,status:3}
+                    socket.emit('setStatus', newStatus);
+                }
 
         }
         //put information on div messages-another-users
@@ -139,28 +140,41 @@
             }
             //A div Another-messages e esvasiada
             // $('.another-message').empty();
-            
-            for (i = 0; i < all_users.length; i++) {
-                let c = 0;
-                for (j = 0; j < msgOutersUsers.length; j++) {
-                    if (msgOutersUsers[j].userID === all_users[i]) {
-                        c++;
+            //Verifica se a menssagem tem status 1
+            //Percorre todos os usuarios
+            //Ao achar o remetente iforma quem é
+            //console.log(message.message_status)
+            if(message.message_status == 1 || message.message_status == 2 ){
+                //console.log("123")
+                for (i = 0; i < all_users.length; i++) {
+                    //Quando a achar o nome 
+                    if (message.userID === all_users[i]) {
+                        
+                        //Informa novas menssagens
+
+                        let numberMessages = $('div[data-name="'+all_users[i]+'"]').text()
+                        //console.log(cont.search(/[0-9]/i))
+                        //Esvasia a div
+                        $('div[data-name="'+all_users[i]+'"]').empty();
+                        //Trasforma numberMessages em inteiro
+                        numberMessages = numberMessages.search(/[0-9]/i) > -1 ? Number.parseInt(numberMessages):0; 
+                        //Soma a quantidade de menssagens
+                        let cont = numberMessages + 1;
+                        let html = '<p>'+cont+'</p>'   
+                        let selector = '.messages-another-users'
+                        $('div[data-name="'+all_users[i]+'"]').css("display","block");
+                        $('div[data-name="'+all_users[i]+'"]').append(
+                            html
+                        )
+                        //Muda o status da menssagem com visto
+                        if(message.userSendID === user && message.message_status == 1){
+                            console.log(message.id);
+                            newStatus = {id:message.id,status:2}
+                            socket.emit('setStatus', newStatus);
+                        }
                     }
                 }
-                if (c != 0) {
-                    //Informa novas menssagens
-                    $('div[data-name="'+all_users[i]+'"]').empty();
-                    let message = '<p>'+c+'</p>'
-                    let selector = '.messages-another-users'
-                    $('div[data-name="'+all_users[i]+'"]').css("display","block");
-                    $('div[data-name="'+all_users[i]+'"]').append(
-                        message
-                    )
-                    //Muda o status da menssagem com visto
-                    newStatus = {id:message.id,status:2}
-                    socket.emit('setStatus', newStatus);
-                }
-            }
+            }   
         }
 
         //config the senders section
@@ -201,18 +215,34 @@
             $(".senders li").on('click', liClick);
             //Desativa a caixa vermelha de outras menssagens 
         });
+        //busca novas menssagens
+        socket.on('newMessages', function (message) {
+            //console.log("osvijb")
+            for (message of message) {
+                if (user.length != 0) {
+                    anotherMessages(message)
+                }
+            }
+        });
         //capiture the messages
         socket.on('messages', function (message) {
+            //console.log("osvijb")
             for (message of message) {
                 if (user.length != 0) {
                     //case id of message equals to id previous message, so return false
                     //if (message.id !== idMessage) {
                     //console.log(message);
-                    if (message.userID === currentSender ||
+                    if ((message.userID === currentSender && message.userSendID === user) ||
                         (message.userID === user && message.userSendID === currentSender)) {
                         renderMessage(message);
                     }
                     else {
+                        /*if(message.status == 1){
+                            //Muda o status da menssagem com visto
+                            newStatus = {id:message.id,status:2}
+                            socket.emit('setStatus', newStatus);
+                        }*/
+                        console.log(message);
                         anotherMessages(message);
                     }
                     idMessage = message.id;
@@ -290,7 +320,7 @@
             socket.emit('findMessage', messageObject);
             //Esvasia o array de outros usuários
             for (i = 0; i < msgOutersUsers.length; i++) {
-                if (msgOutersUsers[i].userID === currentSender) {
+                if (msgOutersUsers[i].userID === currentSender) { 
                     msgOutersUsers.splice(i);
                 }
             }

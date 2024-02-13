@@ -173,10 +173,17 @@ async function findMessageforDateAndSendUser(senduser){
     return rows;
 }
 
+//Faz busca por status
+async function findByStatus(user){
+    const conn = await connect();
+    const [rows] = await conn.query('SELECT * FROM messages WHERE userSendID="'+user+'" AND  message_status  < 3 ;');
+    return rows;
+}
+
 (async () => {
     await createDB();
     let result = await createTables();
     //console.log(result);
 })();
 
-module.exports = {createDB,createTables,addUser,addMessage,findUser,allUser,findMessageforUser,allMessage,findMessageforDate,findMessageforDateAndUser,findMessageforDateAndSendUser,setStatus,findSpecificMsg};
+module.exports = {createDB,createTables,addUser,addMessage,findUser,allUser,findMessageforUser,allMessage,findMessageforDate,findMessageforDateAndUser,findMessageforDateAndSendUser,setStatus,findSpecificMsg,findByStatus};

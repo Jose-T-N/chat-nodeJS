@@ -11,7 +11,22 @@
     background-image: linear-gradient(to right, aqua , #5a5ae6);
     padding-left: 2%;
 }
-
+/*
+*Configurando placehold
+*/
+[contenteditable=true]:empty:before{
+    content: attr(placeholder);
+    pointer-events: none;
+    display: block; /* For Firefox */
+}
+div[contenteditable=true] {
+    border: 1px dashed #AAA;
+    width: 290px;
+    padding: 5px;
+}  
+/*
+*
+*/
 .senders-div{
     height: 87%;
     top:6%;
@@ -87,6 +102,9 @@
     height: 20px;
     border-radius: 50px;
     background-color: #f00;
+    position: absolute;
+    right: 10%;
+    
 }
 .messages-another-users p{
     padding: 0;
@@ -111,29 +129,48 @@
 #chat .baseboard{
     position: relative;
     display: block;
-    height: 19%;
+    height: 15%;
+    width: 80%;
     border-radius: 10px;
     background:rgba(0, 0, 0, 0.1);
+    border-radius: 10px;
+    left: 1%;
 }
-
+/*
+*Caixa de texto
+*/
 #chat .input-message{
     position:absolute;
-    top: 25%;
+    top: -2%;
     left: 2%;
     width: 75%;
     height: 30%;
     resize: none;
     font-size: large;
-    background:rgba(0, 0, 0, 0.3);
-    border-radius: 10px;
+    background:transparent;
     color:#fff;
     padding: 2% 2%;
+    border-color: transparent;
+    border-right: #fff solid 1px;
 }
 
 #chat button{
-    position:absolute;
-    top: 30%;
+    position:relative;
+    top: -10%;
     left: 83%;
+}
+/*
+*Botão pra enviar imagem
+*/
+#chat .send-image{
+    position:relative;
+    top: 29%;
+    left: 86%;
+}
+
+#chat .send-image:hover{
+    cursor: pointer;
+    background-color: rgba(0, 0, 0, 0.2);
 }
 
 #chat .header{

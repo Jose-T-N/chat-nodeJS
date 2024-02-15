@@ -120,19 +120,22 @@ io.on('connection', socket => {
                 if (all_user[0].user === data.user) {
                     //Verifica se só tem um usuário no servidor
                     if (all_user.length == 1) {
+                        //Verifica se a novas messagens para o usuário recem logado
                         newMessages = await db.findByStatus(data.user);
                         messages = await db.findMessageforUser(data.user, all_user[0].user);
-                        console.log(newMessages);
+                        //console.log(newMessages);
                     }
                     else {
+                        //Verifica se a novas messagens para o usuário recem logado
                         newMessages = await db.findByStatus(data.user);
                         messages = await db.findMessageforUser(data.user, all_user[1].user);
-                        console.log(newMessages);
+                        //console.log(newMessages);
                     }
                 } else {
+                    //Verifica se a novas messagens para o usuário recem logado
                     newMessages = await db.findByStatus(data.user);
                     messages = await db.findMessageforUser(data.user, all_user[0].user);
-                    console.log(newMessages);
+                    //console.log(newMessages);
                 }
                 //envia as menssagens para a pagina do cliente
                 socket.emit('messages', messages);
@@ -180,6 +183,11 @@ io.on('connection', socket => {
         (async () => {
             let messages = await db.findByStatus(data.user);
         })()
+    });
+
+    //Recebe arquivos de base64
+    socket.on('base64', data => {
+        console.log(data.base64);
     });
 
     socket.on('disconnecting', data => {

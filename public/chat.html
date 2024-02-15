@@ -31,10 +31,13 @@
             <div class="messages">
             </div>
             <div class="baseboard">
-                <textarea type="text" name="message" placeholder="Digite sua menssagem"
-                    class="input-message"></textarea>
-                <button type="submit">Enviar</button>
+                <input id="input-img" type="file" style="display: none;">
+                <p contenteditable="true" name="message" placeholder="Digite sua menssagem" class="input-message"></p>
+                <label for="input-img">
+                    <img class="send-image" src="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAB4AAAAeCAYAAAA7MK6iAAAACXBIWXMAAAsTAAALEwEAmpwYAAABSUlEQVR4nO2VTUoDQRCFP93q6C10aZKl6N6gwQuZuBDBu0j0BMaAeACvMHGTZKVxP1LwBof56x6n3cg8KAhdr/qjuqcr0KnTjw6BNyCpCMsd0FKv2uwls/ZcA03DPMG0A1x7QNMYq8Zb58B7A0DTWADDMvDCo3gJXAE9dWXR19rKoz4uA7uK7oGo5sT2gGmu5hg4ya01Aht0S75LYA58KeyDGim3nYMb9PS34GWm07sa3608+45jL6jKaPeXduq6jgt5JyHAR8rPPcAzefshwLvKbzzAn/JGIcBRA/BH5gtvDe41GJlP8g5CgMfKjzzANv1wjNiCqowrHR16MlW+m8xzWocAJxoKNhzQk5npzjc63rRT8zw69ioo8YBbN1Wy3IPHPgUlHrHWcBjomUX6PXEcb1IH9vl3ahtxGXj4x/AYOCsDd+r0P/QNhsOF+bVhbNEAAAAASUVORK5CYII=">
+                </label>
             </div>
+            <button type="submit">Enviar</button>
         </form>
 
         <!--<div class="messages-another-users">
@@ -62,6 +65,14 @@
         if (user.length == 0 || user === null) {
             $(location).attr('href', 'index.html');
         }
+
+        /**
+         * Evento do input file
+         */
+        
+        $("#input-img").on('change',()=>{
+            readFile();
+        })
 
         //console.log(user);
 
@@ -144,37 +155,38 @@
             //Percorre todos os usuarios
             //Ao achar o remetente iforma quem é
             //console.log(message.message_status)
-            if(message.message_status == 1 || message.message_status == 2 ){
-                //console.log("123")
-                for (i = 0; i < all_users.length; i++) {
-                    //Quando a achar o nome 
-                    if (message.userID === all_users[i]) {
-                        
-                        //Informa novas menssagens
+            if(message != null)
+                if(message.message_status == 1 || message.message_status == 2 ){
+                    //console.log("123")
+                    for (i = 0; i < all_users.length; i++) {
+                        //Quando a achar o nome 
+                        if (message.userID === all_users[i]) {
+                            
+                            //Informa novas menssagens
 
-                        let numberMessages = $('div[data-name="'+all_users[i]+'"]').text()
-                        //console.log(cont.search(/[0-9]/i))
-                        //Esvasia a div
-                        $('div[data-name="'+all_users[i]+'"]').empty();
-                        //Trasforma numberMessages em inteiro
-                        numberMessages = numberMessages.search(/[0-9]/i) > -1 ? Number.parseInt(numberMessages):0; 
-                        //Soma a quantidade de menssagens
-                        let cont = numberMessages + 1;
-                        let html = '<p>'+cont+'</p>'   
-                        let selector = '.messages-another-users'
-                        $('div[data-name="'+all_users[i]+'"]').css("display","block");
-                        $('div[data-name="'+all_users[i]+'"]').append(
-                            html
-                        )
-                        //Muda o status da menssagem com visto
-                        if(message.userSendID === user && message.message_status == 1){
-                            console.log(message.id);
-                            newStatus = {id:message.id,status:2}
-                            socket.emit('setStatus', newStatus);
+                            let numberMessages = $('div[data-name="'+all_users[i]+'"]').text()
+                            //console.log(cont.search(/[0-9]/i))
+                            //Esvasia a div
+                            $('div[data-name="'+all_users[i]+'"]').empty();
+                            //Trasforma numberMessages em inteiro
+                            numberMessages = numberMessages.search(/[0-9]/i) > -1 ? Number.parseInt(numberMessages):0; 
+                            //Soma a quantidade de menssagens
+                            let cont = numberMessages + 1;
+                            let html = '<p>'+cont+'</p>'   
+                            let selector = '.messages-another-users'
+                            $('div[data-name="'+all_users[i]+'"]').css("display","block");
+                            $('div[data-name="'+all_users[i]+'"]').append(
+                                html
+                            )
+                            //Muda o status da menssagem com visto
+                            if(message.userSendID === user && message.message_status == 1){
+                                console.log(message.id);
+                                newStatus = {id:message.id,status:2}
+                                socket.emit('setStatus', newStatus);
+                            }
                         }
                     }
-                }
-            }   
+                }   
         }
 
         //config the senders section
@@ -324,7 +336,9 @@
                     msgOutersUsers.splice(i);
                 }
             }
-
+            //Tira o aviso de novas menssagens
+            $('div[data-name="'+currentSender+'"]').children("P").remove();
+            $('div[data-name="'+currentSender+'"]').css('display','none');
             state = states[1];
             //Fecha a parte de remetentes e abre a parte de messagens
             if ($(window).width() < 620) {
@@ -335,6 +349,24 @@
 
             anotherMessages(null);
 
+        }
+        /**
+         *Pega a imagem selecionada pelo usuário é trasforma em base64 
+         */
+        function readFile() {
+            
+            var file = document.querySelector('input[type=file]')['files'][0];
+            var reader = new FileReader();
+            var baseString;
+            reader.onloadend = function () {
+                baseString = reader.result;
+                //console.log(baseString);
+                //Envia a imagem para o servidor
+                const data = {base64: baseString}
+                socket.emit('base64', data);
+
+            };
+            reader.readAsDataURL(file);
         }
 
     </script>

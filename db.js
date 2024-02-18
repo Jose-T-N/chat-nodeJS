@@ -25,6 +25,13 @@ async function connect(){
     global.db = db;
     return db;
 }
+/**
+ * 
+ * 
+ * -------------- Criação de tabelas ----------
+ *  
+ * 
+ */
 //create tables users and messages
 async function createTables(){
     const conn = await connect();
@@ -51,6 +58,7 @@ async function createTables(){
     +'userSendID VARCHAR(20) NOT NULL,'
     +'date DATETIME NOT NULL,'
     +'message_status TINYINT NOT NULL,'
+    +'message_type VARCHAR(10) NOT NULL,'
     +'PRIMARY KEY(id),FOREIGN KEY (userID) REFERENCES users(user),FOREIGN KEY (userSendID) REFERENCES users(user));'
     ).then(
         function(){
@@ -65,7 +73,13 @@ async function createTables(){
     return [result1,result2];
 
 }
-//add user in table users
+/**
+ *
+ * 
+ * --------------------- Adicionar linhas ----------------
+ * 
+ * 
+ */
 async function addUser(user,passwd){
     const conn = await connect();
     result = '';
@@ -82,10 +96,10 @@ async function addUser(user,passwd){
 }
 
 //add message in table messages
-async function addMessage(user,sdUser,msg,date_time,status_message){
+async function addMessage(user,sdUser,msg,date_time,status_message,message_type){
     const conn = await connect();
     result = '';
-    await conn.query('INSERT INTO messages(userID,message,userSendID,date,message_status) VALUES ("'+user+'","'+msg+'","'+sdUser+'","'+date_time+'",'+status_message+')').then(
+    await conn.query('INSERT INTO messages(userID,message,userSendID,date,message_status,message_type) VALUES ("'+user+'","'+msg+'","'+sdUser+'","'+date_time+'",'+status_message+',"'+message_type+'")').then(
         function(){
             result = 'ok';
         }
@@ -96,6 +110,13 @@ async function addMessage(user,sdUser,msg,date_time,status_message){
     );
     return result;
 }
+
+/**
+ * 
+ * ------------------------------Buscas--------------------------
+ * 
+ * 
+ */
 
 //find expecific user
 async function findUser(user){
@@ -122,13 +143,35 @@ async function allMessage(){
 
 }
 //find message for expecific user
-async function findMessageforUser(user, senduser){
+async function findTextMessages(user, senduser){
     const conn = await connect();
-    const [rows] = await conn.query('SELECT * FROM messages WHERE userID="'+user+'" AND userSendID="'+senduser+'" OR userID="'+senduser+'" AND userSendID="'+user+'";');
+    const [rows] = await conn.query('SELECT * FROM messages WHERE userID="'+user+'" AND userSendID="'+senduser+'" AND message_type="TEXT" AND message_status = 3 OR userID="'+senduser+'" AND userSendID="'+user+'" AND message_type="TEXT" AND message_status = 3;');
     
     return rows;
 
 }
+
+//Faz busca por status
+async function findNewsTextMessage(user, senduser){
+    const conn = await connect();
+    const [rows] = await conn.query('SELECT * FROM messages WHERE ((userID="'+user+'" AND userSendID="'+senduser+'" AND message_type="TEXT" AND message_status < 3 ) OR (userID="'+senduser+'" AND userSendID="'+user+'" AND message_type="TEXT" AND message_status < 3));');
+    return rows;
+}
+
+//Faz busca por status
+async function findBase64Messages(user, senduser){
+    const conn = await connect();
+    const [rows] = await conn.query('SELECT * FROM messages WHERE userID="'+user+'" AND userSendID="'+senduser+'" AND message_type="BASE64" AND message_status = 3 OR userID="'+senduser+'" AND userSendID="'+user+'" AND message_type="BASE64" AND message_status = 3;');
+    return rows;
+}
+
+//Faz busca por status
+async function findNewsBase64Messages(user, senduser){
+    const conn = await connect();
+    const [rows] = await conn.query('SELECT * FROM messages WHERE ((userID="'+user+'" AND userSendID="'+senduser+'" AND message_type="BASE64" AND message_status < 3 ) OR (userID="'+senduser+'" AND userSendID="'+user+'" AND message_type="BASE64" AND message_status < 3))');
+    return rows;
+}
+
 
 //find message for expecific user and especific date
 async function findMessageforDate(user, senduser){
@@ -150,13 +193,6 @@ async function findMessageforDateAndUser(user){
     return rows;
 }
 
-//mudar estatus da menssagem
-async function setStatus(id, status_message){
-    const conn = await connect();
-    const [rows] = await conn.query('UPDATE messages SET message_status = '+status_message+' WHERE id='+id);
-    return rows;
-}
-
 //Pesquisar menssagem expecifica
 async function findSpecificMsg(user,sdUser,msg,date_time,status_message){
     const conn = await connect();
@@ -173,17 +209,30 @@ async function findMessageforDateAndSendUser(senduser){
     return rows;
 }
 
-//Faz busca por status
-async function findByStatus(user){
+/**
+ * 
+ * 
+ * ------------------------- Atualiuzações --------------------
+ * 
+ * 
+ * 
+ */
+
+//mudar estatus da menssagem
+async function setStatus(id, status_message){
     const conn = await connect();
-    const [rows] = await conn.query('SELECT * FROM messages WHERE userSendID="'+user+'" AND  message_status  < 3 ;');
+    const [rows] = await conn.query('UPDATE messages SET message_status = '+status_message+' WHERE id='+id);
     return rows;
 }
 
+/**
+ * 
+ * ------------------------- Construtor -----------
+ * 
+ */
 (async () => {
     await createDB();
     let result = await createTables();
-    //console.log(result);
 })();
 
-module.exports = {createDB,createTables,addUser,addMessage,findUser,allUser,findMessageforUser,allMessage,findMessageforDate,findMessageforDateAndUser,findMessageforDateAndSendUser,setStatus,findSpecificMsg,findByStatus};
+module.exports = {createDB,createTables,addUser,addMessage,findUser,allUser,findTextMessages,allMessage,findMessageforDate,findMessageforDateAndUser,findMessageforDateAndSendUser,setStatus,findSpecificMsg,findNewsTextMessage,findBase64Messages,findNewsBase64Messages};

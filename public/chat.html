@@ -142,6 +142,30 @@
                 }
 
         }
+
+        //
+        //the function that put messages on the screen
+        //
+        //
+        function renderMessageB64(message) {
+
+            fetch(message)
+                .then(res => res.blob())
+                .then(blob => {
+                    const file = new File([blob], "File name",{ type: "image/png" })
+                    console.log(file);
+            });
+
+            let messagesDiv = document.querySelector('.messages');
+            messagesDiv.scrollTop = messagesDiv.scrollHeight;
+                if(message.userSendID === user && message.message_status == 2){
+                    //Muda o status da menssagem com visto
+                    newStatus = {id:message.id,status:3}
+                    socket.emit('setStatus', newStatus);
+                }
+
+        }
+
         //put information on div messages-another-users
         function anotherMessages(message) {
             //caso message for diferente de null
@@ -228,17 +252,27 @@
             //Desativa a caixa vermelha de outras menssagens 
         });
         //busca novas menssagens
-        socket.on('newMessages', function (message) {
+        socket.on('newsMessages', function (message) {
             //console.log("osvijb")
             for (message of message) {
+                console.log(message)
                 if (user.length != 0) {
-                    anotherMessages(message)
+                    if(message.userSendID === user &&  message.userID !== currentSender ){
+                        anotherMessages(message);
+                    }
+                    else{
+                        if(message.message_type === "TEXT")
+                            renderMessage(message);
+                        else
+                            renderMessageB64(message);
+                    }
                 }
             }
         });
         //capiture the messages
         socket.on('messages', function (message) {
             //console.log("osvijb")
+            //console.log(message)
             for (message of message) {
                 if (user.length != 0) {
                     //case id of message equals to id previous message, so return false
@@ -280,10 +314,16 @@
             event.preventDefault();
 
             //captch the digited informations
-            var message = $('textarea[name=message]').val();
+            var message = $('.input-message').text();
             var usersend = currentSender;
 
-            $('textarea[name=message]').val('');
+            $('.input-message').on('input', function () {
+                
+            });
+
+            console.log(message)
+
+            $('.input-message').text('');
 
             //console.log(usersend);
 
@@ -330,6 +370,7 @@
                 userSendID: currentSender
             }
             socket.emit('findMessage', messageObject);
+            socket.emit('findNewsMessage', messageObject);
             //Esvasia o array de outros usuários
             for (i = 0; i < msgOutersUsers.length; i++) {
                 if (msgOutersUsers[i].userID === currentSender) { 
@@ -361,8 +402,18 @@
             reader.onloadend = function () {
                 baseString = reader.result;
                 //console.log(baseString);
+                let index = baseString.indexOf(",");
+                let b64 = baseString.substring(index+1,baseString.length);
+                //Pega a extenção da imagem
+                index = file.name.lastIndexOf(".");
+                let ext = file.name.substring(index,file.name.length);
                 //Envia a imagem para o servidor
-                const data = {base64: baseString}
+                const data = {
+                    userID: user,
+                    userSendID: currentSender,
+                    base64: b64,
+                    ext: ext
+                }
                 socket.emit('base64', data);
 
             };

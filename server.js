@@ -20,11 +20,16 @@ const dt = require('./DataTime');
 
 const app = express();
 const server = require('http').createServer(app);
-const io = require('socket.io')(server);
+const io = require('socket.io')(server, {maxHttpBufferSize: 1e8, pingTimeout: 60000});
+
+const readable = require('stream').Readable;
+const fs = require("fs");
 
 const db = require('./db');
+//const { dir } = require('console');
 
 var users_connected = [];
+const message_types = ["TEXT","BASE64"];
 
 app.use(express.static(path.join(__dirname, 'public')));
 app.set('views', path.join(__dirname, 'public'));
@@ -87,7 +92,7 @@ io.on('connection', socket => {
     socket.on('sendMessage', data => {
         (async () => {
             //status 1 igual a salvo no servidor
-            const result = await db.addMessage(data.userID, data.userSendID, data.message, dt.dateTime(),1);
+            const result = await db.addMessage(data.userID, data.userSendID, data.message, dt.dateTime(),1,"TEXT");
             //console.log(result);
             if (result === 'ok') {
                 data = await db.findSpecificMsg(data.userID, data.userSendID, data.message, dt.dateTime(),1);
@@ -110,6 +115,8 @@ io.on('connection', socket => {
             if (data.page === 'chat') {
                 let messages;
                 let newMessages;
+                let messages64;
+                let newMessages64;
 
                 users_connected.push({ id: socket.id, user: data.user });
                 //Envia os distinatatios para a pagina do cliente
@@ -121,26 +128,34 @@ io.on('connection', socket => {
                     //Verifica se só tem um usuário no servidor
                     if (all_user.length == 1) {
                         //Verifica se a novas messagens para o usuário recem logado
-                        newMessages = await db.findByStatus(data.user);
-                        messages = await db.findMessageforUser(data.user, all_user[0].user);
+                        newMessages = await db.findNewsTextMessage(data.user,all_user[0].user);
+                        messages = await db.findTextMessages(data.user, all_user[0].user);
+                        messages64 = await db.findBase64Messages(data.user, all_user[0].user);
+                        newMessages64 = await db.findNewsBase64Messages(data.user, all_user[0].user);
+                        
                         //console.log(newMessages);
                     }
                     else {
                         //Verifica se a novas messagens para o usuário recem logado
-                        newMessages = await db.findByStatus(data.user);
-                        messages = await db.findMessageforUser(data.user, all_user[1].user);
+                        newMessages = await db.findNewsTextMessage(data.user, all_user[1].user);
+                        messages = await db.findTextMessages(data.user, all_user[1].user);
+                        messages64 = await db.findBase64Messages(data.user, all_user[1].user);
+                        newMessages64 = await db.findNewsBase64Messages(data.user, all_user[1].user);
                         //console.log(newMessages);
                     }
                 } else {
                     //Verifica se a novas messagens para o usuário recem logado
-                    newMessages = await db.findByStatus(data.user);
-                    messages = await db.findMessageforUser(data.user, all_user[0].user);
+                    newMessages = await db.findNewsTextMessage(data.user, all_user[0].user);
+                    messages = await db.findTextMessages(data.user, all_user[0].user);
+                    messages64 = await db.findBase64Messages(data.user, all_user[0].user);
+                    newMessages64 = await db.findNewsBase64Messages(data.user, all_user[0].user);
                     //console.log(newMessages);
                 }
-                //envia as menssagens para a pagina do cliente
+
                 socket.emit('messages', messages);
-                //Envia as menssagens não lidas para a pagina do cliente
-                socket.emit('newMessages', newMessages);
+                socket.emit('newsMessages', newMessages);
+                socket.emit('messages', messages64);
+                socket.emit('newsMessages', fileToBase64(newMessages64));
                 
             } else if (data.page === 'index') {
                 //user = '';
@@ -151,9 +166,17 @@ io.on('connection', socket => {
     //action == 'findMessage'
     socket.on('findMessage', data => {
         (async () => {
-            let messages = await db.findMessageforUser(data.userID, data.userSendID);
-            //console.log(messages);
+            let messages = await db.findTextMessages(data.userID, data.userSendID);
             socket.emit('messages', messages);
+            //console.log(messages);
+        })()
+    });
+    //action == 'findMessage'
+    socket.on('findNewsMessage', data => {
+        (async () => {
+            let messages = await db.findNewsTextMessage(data.userID, data.userSendID);
+            socket.emit('newsMessages', messages);
+            //console.log(messages);
         })()
     });
     //check if message arrived 
@@ -187,7 +210,28 @@ io.on('connection', socket => {
 
     //Recebe arquivos de base64
     socket.on('base64', data => {
-        console.log(data.base64);
+        //console.log(data.user);
+        //Cria um nome aleatório
+        let generateRandom = () => Math.random().toString(36).substring(2, 15) + Math.random().toString(23).substring(2, 5);
+        //cria pasta
+        let dir = "files"
+        if (!fs.existsSync(dir)){
+            fs.mkdirSync(dir);
+        }
+        //Cria pasta do usuário
+        if (!fs.existsSync(dir+"/"+data.userID)){
+            fs.mkdirSync(dir+"/"+data.userID);
+        }
+        //Nome e diretório do arquivo
+        const filiDir =  __dirname.replaceAll("\\","/")+"/"+dir+"/"+"/"+data.userID+"/"+generateRandom() +data.ext;
+
+        console.log(__dirname.replaceAll("\\",'/'));
+
+        require("fs").writeFile( filiDir,data.base64, 'base64', function(err) {
+            (async () => {
+                const result = await db.addMessage(data.userID, data.userSendID, filiDir, dt.dateTime(),1,"BASE64");
+            })();
+        });
     });
 
     socket.on('disconnecting', data => {
@@ -201,6 +245,20 @@ io.on('connection', socket => {
         })()
     });
 })
+
+//Transforma aquivo em base64
+function fileToBase64(files){
+    let bases64 = [];
+    for(let file of files) {
+        const contents = fs.readFileSync(file.message, {encoding: 'base64'});
+        file.message = contents;
+        bases64.push(file);
+    }
+
+    console.log(bases64);
+
+    return  bases64;
+}
 
 server.listen(3000, function () {
     console.log('listen on port 3000');

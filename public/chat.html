@@ -67,7 +67,9 @@
         }
 
         /**
+         * 
          * Evento do input file
+         * 
          */
         
         $("#input-img").on('change',()=>{
@@ -142,31 +144,48 @@
                 }
 
         }
-
-        //
-        //the function that put messages on the screen
-        //
-        //
-        function renderMessageB64(message) {
-
-            fetch(message)
-                .then(res => res.blob())
-                .then(blob => {
-                    const file = new File([blob], "File name",{ type: "image/png" })
-                    console.log(file);
-            });
-
-            let messagesDiv = document.querySelector('.messages');
-            messagesDiv.scrollTop = messagesDiv.scrollHeight;
-                if(message.userSendID === user && message.message_status == 2){
-                    //Muda o status da menssagem com visto
-                    newStatus = {id:message.id,status:3}
-                    socket.emit('setStatus', newStatus);
+        /**---------------//////////////////////////////////////////////-------------------------//-
+        //---------------///////Recebe as menssagens do servidor///////-------------------------//-
+        /---------------//////////////////////////////////////////////--------------------------/-
+        */
+        socket.on('messages', function (messages) {
+            //console.log("osvijb")
+            //console.log(message)
+            for (let message of messages) {
+                //console.log(message);
+                if (user.length != 0) {
+                    //case id of message equals to id previous message, so return false
+                    //if (message.id !== idMessage) {
+                    //console.log(message);
+                    if ((message.message.userID === currentSender && message.message.userSendID === user) ||
+                        (message.message.userID === user && message.message.userSendID === currentSender)) {
+                            if(message.type === "old_message" || message.type === "new_message")
+                                renderMessage(message.message);
+                            else if(message.type === "old_64_message" || message.type === "new_64_message")
+                                renderMessageB64(message.message)
+                            
+                            //console.log(message.type);
+                    }
+                    else {
+                        /*if(message.status == 1){
+                            //Muda o status da menssagem com visto
+                            newStatus = {id:message.id,status:2}
+                            socket.emit('setStatus', newStatus);
+                        }*/
+                        anotherMessages(message.message);
+                    }
+                    idMessage = message.id;
+                    //}
                 }
-
-        }
-
-        //put information on div messages-another-users
+                //pos +=1;
+            }
+        });
+        /**
+         * ////////////////////////////////////////////////////////////////////////////////////
+         * -------------------------////////////////////////////---------------------
+        //---///////---Mensssagens de outros remententes (que não é o detinatário original).--/
+        //---/////////////////////////////////////////////////////////////////////////////----/
+        *//////////////////////////////////////////////////////////////////////////////////////*
         function anotherMessages(message) {
             //caso message for diferente de null
             //então o array msgOuterUsers é preenchido
@@ -199,9 +218,7 @@
                             let html = '<p>'+cont+'</p>'   
                             let selector = '.messages-another-users'
                             $('div[data-name="'+all_users[i]+'"]').css("display","block");
-                            $('div[data-name="'+all_users[i]+'"]').append(
-                                html
-                            )
+                            $('div[data-name="'+all_users[i]+'"]').append(html)
                             //Muda o status da menssagem com visto
                             if(message.userSendID === user && message.message_status == 1){
                                 console.log(message.id);
@@ -212,7 +229,78 @@
                     }
                 }   
         }
+        //
+        //the function that put messages on the screen
+        //
+        //
+        function renderMessageB64(message) {
+            //Verifica se a menssagem é do usuário ou do destinatário
+            if (message.userID === user) {
+                //
+                var img = new Image();
+                img.className = "file-message";
+                img.src = 'data:image/jpg;base64,'+message.message;
 
+                if (message.userID === user) {
+                $('.messages').append(
+                    '<section class="file-message-this">' +
+                    '<div class="content">' +
+                    '<div class="message-box">' +
+                    '<img class="message" src="data:image/jpg;base64,'+ message.message + '"/>' +
+                    '</div>' +
+                    '<img src="src/user-icon.png"/>' +
+                    '<div class="user"> você </div>' +
+                    '</div>' +
+                    '</section>');
+            }
+            else {
+                $('.messages').append(
+                    '<section class="file-message-another">' +
+                    '<div class="content">' +
+                    '<img src="src/user-icon.png"/>' +
+                    '<div class="message-box">' +
+                    '<img class="message" src="data:image/jpg;base64,'+ message.message + '"/>' +
+                    '</div>' +
+                    '<div class="user">' + message.userID + '</div>' +
+                    '</div>' +
+                    '</section>');
+            }
+            }
+            else{
+                
+            }
+            //
+            //
+            //
+            let messagesDiv = document.querySelector('.messages');
+            messagesDiv.scrollTop = messagesDiv.scrollHeight;
+            if(message.userSendID === user && message.message_status == 2){
+                //Muda o status da menssagem com visto
+                newStatus = {id:message.id,status:3}
+                socket.emit('setStatus', newStatus);
+            }
+        }
+        /**
+         * -------------------//////////////////////////////////////////////////--------------
+         * ------///Recebe as menssagens que foram recém enviadas para o servidor--//////--
+         * -////////////////////////////////////////////////////////////////////////////-------
+         */
+         socket.on('send-now', function (message) { 
+            //Verifica se pro remetente atual
+            console.log(message);
+            if ((message.userID === currentSender && message.userSendID === user) ||
+                (message.userID === user && message.userSendID === currentSender)){
+                    if(message.message_type === "TEXT")
+                        renderMessage(message);
+                    else {
+                        renderMessageB64(message);
+                    }
+            }
+            else {
+                anotherMessages(message);
+            }
+            idMessage = message.id;
+        });
         //config the senders section
         socket.on('senders', function (message) {
             $('#usersend').empty();
@@ -255,7 +343,7 @@
         socket.on('newsMessages', function (message) {
             //console.log("osvijb")
             for (message of message) {
-                console.log(message)
+                //console.log(message)
                 if (user.length != 0) {
                     if(message.userSendID === user &&  message.userID !== currentSender ){
                         anotherMessages(message);
@@ -268,46 +356,6 @@
                     }
                 }
             }
-        });
-        //capiture the messages
-        socket.on('messages', function (message) {
-            //console.log("osvijb")
-            //console.log(message)
-            for (message of message) {
-                if (user.length != 0) {
-                    //case id of message equals to id previous message, so return false
-                    //if (message.id !== idMessage) {
-                    //console.log(message);
-                    if ((message.userID === currentSender && message.userSendID === user) ||
-                        (message.userID === user && message.userSendID === currentSender)) {
-                        renderMessage(message);
-                    }
-                    else {
-                        /*if(message.status == 1){
-                            //Muda o status da menssagem com visto
-                            newStatus = {id:message.id,status:2}
-                            socket.emit('setStatus', newStatus);
-                        }*/
-                        console.log(message);
-                        anotherMessages(message);
-                    }
-                    idMessage = message.id;
-                    //}
-                }
-                //pos +=1;
-            }
-        });
-        //capiture the messages that send now
-        socket.on('send-now', function (message) { 
-            //Verifica se pro remetente atual
-            if ((message.userID === currentSender && message.userSendID === user) ||
-                (message.userID === user && message.userSendID === currentSender)){
-                    renderMessage(message);
-            }
-            else {
-                anotherMessages(message);
-            }
-            idMessage = message.id;
         });
         //when the button submit is click
         $('#chat').submit(function (event) {

@@ -124,38 +124,133 @@ io.on('connection', socket => {
                 await socket.emit('senders', all_user);
                 //Pesquisas as menssagens
                 //se o usuário atua for o primeiro
-                if (all_user[0].user === data.user) {
-                    //Verifica se só tem um usuário no servidor
-                    if (all_user.length == 1) {
+                if (all_user != 0)
+                    if (all_user[0].user === data.user) {
+                        //Verifica se só tem um usuário no servidor
+                        if (all_user.length == 1) {
+                            //Verifica se a novas messagens para o usuário recem logado
+                            newMessages = await db.findNewsTextMessage(data.user,all_user[0].user);
+                            messages = await db.findTextMessages(data.user, all_user[0].user);
+                            messages64 = await db.findBase64Messages(data.user, all_user[0].user);
+                            newMessages64 = await db.findNewsBase64Messages(data.user, all_user[0].user);
+                            
+                            //console.log(newMessages);
+                        }
+                        else {
+                            //Verifica se a novas messagens para o usuário recem logado
+                            newMessages = await db.findNewsTextMessage(data.user, all_user[1].user);
+                            messages = await db.findTextMessages(data.user, all_user[1].user);
+                            messages64 = await db.findBase64Messages(data.user, all_user[1].user);
+                            newMessages64 = await db.findNewsBase64Messages(data.user, all_user[1].user);
+                            //console.log(newMessages);
+                        }
+                    } else {
                         //Verifica se a novas messagens para o usuário recem logado
-                        newMessages = await db.findNewsTextMessage(data.user,all_user[0].user);
+                        newMessages = await db.findNewsTextMessage(data.user, all_user[0].user);
                         messages = await db.findTextMessages(data.user, all_user[0].user);
                         messages64 = await db.findBase64Messages(data.user, all_user[0].user);
                         newMessages64 = await db.findNewsBase64Messages(data.user, all_user[0].user);
-                        
                         //console.log(newMessages);
                     }
-                    else {
-                        //Verifica se a novas messagens para o usuário recem logado
-                        newMessages = await db.findNewsTextMessage(data.user, all_user[1].user);
-                        messages = await db.findTextMessages(data.user, all_user[1].user);
-                        messages64 = await db.findBase64Messages(data.user, all_user[1].user);
-                        newMessages64 = await db.findNewsBase64Messages(data.user, all_user[1].user);
-                        //console.log(newMessages);
+                    //
+                    // ------------------------/////////////////////////-----------------------
+                    //--------array Geral
+                    let allMessages = [];
+                    //
+                    //Trasforma os três arrays em um
+                    ///Menssagens velhas
+                    //---------------------/////////////////////////////////////------
+                    for(let item of messages){
+                        const json = {
+                            message : item,
+                            type : 'old_message'    
+                        }
+                        allMessages.push(json);
                     }
-                } else {
-                    //Verifica se a novas messagens para o usuário recem logado
-                    newMessages = await db.findNewsTextMessage(data.user, all_user[0].user);
-                    messages = await db.findTextMessages(data.user, all_user[0].user);
-                    messages64 = await db.findBase64Messages(data.user, all_user[0].user);
-                    newMessages64 = await db.findNewsBase64Messages(data.user, all_user[0].user);
-                    //console.log(newMessages);
-                }
+                    //
+                    //--------------////////////////////////////////-------
+                    //----Novas Menssagens
+                    //-----------////////////////////////////-------
+                    for(let item of newMessages){
+                        const json = {
+                            message : item,
+                            type : 'new_message'    
+                        }
+                        allMessages.push(json);
+                    }
+                    //
+                    //-----------////////////////////////////////-------//
+                    //----Velhas Menssagens base 64-------------------///////////////
+                    //-------------////////////////////////////-------////////////////
+                    for(let item of messages64){
+                        //------/////////////////////////----/////
+                        //--///--Index do ponto que define a extenção-///
+                        //-----/////////////////////-------////
+                        let pointIndex = item.message.lastIndexOf('.');
+                        /////////////////////////////////////////////
+                        //---///--Extenção do arquivo--///
+                        /////////////////////////////////////
+                        let ext = item.message.substring(pointIndex + 1,item.message.length);
+                        item.message.ext = ext;
+                        ////////////////////////////////////////////////////////
+                        //-------///Trasforma o arquivo em base64/----/////////
+                        ///////////////////////////////////////////////////////
+                        item = {
+                            id : item.id,
+                            message : fileToBase64(item.message),
+                            userID: item.userID,
+                            userSendID: item.userSendID,
+                            date: item.date,
+                            message_status: item.message_status,
+                            message_type: item.message_type,
+                            ext:ext
+                        };
+                        const json = {
+                            message : item,
+                            type : 'old_64_message'
+                        }
+                        allMessages.push(json);
+                    }
+                    //
+                    //------------////////////////////////////////-------//
+                    //----Novas Menssagens base 64-----------------------/////////
+                    //--------------------////////////////////////////-------/////
+                    for(let item of newMessages64){
+                        //------/////////////////////////----/////
+                        //--///--Index do ponto que define a extenção-///
+                        //-----/////////////////////-------////
+                        let pointIndex = item.message.lastIndexOf('.');
+                        /////////////////////////////////////////////
+                        //---///--Extenção do arquivo--///
+                        /////////////////////////////////////
+                        let ext = item.message.substring(pointIndex + 1,item.message.length);
+                        ////////////////////////////////////////////////////////
+                        //-------///Trasforma o arquivo em base64/----/////////
+                        ///////////////////////////////////////////////////////
+                        item = {
+                            id : item.id,
+                            message : fileToBase64(item.message),
+                            userID: item.userID,
+                            userSendID: item.userSendID,
+                            date: item.date,
+                            message_status: item.message_status,
+                            message_type: item.message_type,
+                            ext:ext
+                        };
+                        const json = {
+                            message : item,
+                            type : 'new_64_message'
+                        }
+                        allMessages.push(json);
+                    }
+                    //-----////////////////////////-----
+                    //---///////----Arruma a lista conforme o time----////-----
+                    //-----////////////////////////-----
+                    allMessages.sort(function(a,b){return a.message.date - b.message.date});
+                    socket.emit('messages', allMessages);
+                    
+                    console.log(allMessages[0].message);
 
-                socket.emit('messages', messages);
-                socket.emit('newsMessages', newMessages);
-                socket.emit('messages', messages64);
-                socket.emit('newsMessages', fileToBase64(newMessages64));
                 
             } else if (data.page === 'index') {
                 //user = '';
@@ -207,8 +302,11 @@ io.on('connection', socket => {
             let messages = await db.findByStatus(data.user);
         })()
     });
-
-    //Recebe arquivos de base64
+    /**
+     * /////////////////////////////////////////////////////////////////////////////////////
+     * ---------///////////---------Recebe arquivos de base64----------//////////////------
+     * ////////////////////////////////////////////////////////////////////////////////////
+     */
     socket.on('base64', data => {
         //console.log(data.user);
         //Cria um nome aleatório
@@ -225,11 +323,22 @@ io.on('connection', socket => {
         //Nome e diretório do arquivo
         const filiDir =  __dirname.replaceAll("\\","/")+"/"+dir+"/"+"/"+data.userID+"/"+generateRandom() +data.ext;
 
-        console.log(__dirname.replaceAll("\\",'/'));
-
+        //--------/////////////---------------------------///////////////////----
+        //---/////////////--------Cria a iumagem e salva a imagem no banco---////////
+        //////////////////////////////////////////////////////////////////////////////
         require("fs").writeFile( filiDir,data.base64, 'base64', function(err) {
             (async () => {
                 const result = await db.addMessage(data.userID, data.userSendID, filiDir, dt.dateTime(),1,"BASE64");
+                //Se tudo estiver ok envia o arquivo para o remetente que o enviou
+                if(result === 'ok'){
+                    const sendData = {
+                        userID: data.userID,
+                        userSendID: data.userSendID,
+                        message: data.base64,
+                        ext: data.ext
+                    }
+                    socket.emit('send-now', sendData);
+                }
             })();
         });
     });
@@ -245,19 +354,21 @@ io.on('connection', socket => {
         })()
     });
 })
-
-//Transforma aquivo em base64
-function fileToBase64(files){
-    let bases64 = [];
+/**-----------Trasforma arquivo em bas64
+ * ------------////////////////////////////////---------------------
+ * ---///////////---@param {Arquivo pra virar base64} file /////////////-------
+ * -----///////////////////---@returns aquivo em base64 ------------/////////////------ 
+ * ////////////////------------------------------------/////////////---
+ * /////////////////////////////////////////////////////////////////////
+ */
+function fileToBase64(file){
+    /**let bases64 = [];
     for(let file of files) {
         const contents = fs.readFileSync(file.message, {encoding: 'base64'});
         file.message = contents;
         bases64.push(file);
-    }
-
-    console.log(bases64);
-
-    return  bases64;
+    }*/
+    return  fs.readFileSync(file, {encoding: 'base64'});;
 }
 
 server.listen(3000, function () {

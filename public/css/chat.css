@@ -111,6 +111,7 @@ div[contenteditable=true] {
     margin: 0;
     text-align: center;
 }
+
 /*Tela de chat*/
 #chat {
     display: block;
@@ -330,6 +331,57 @@ anoter user
     height: fit-content;
 }
 
+
+/*
+*-///--////////////////////////////////////////////////////////////////////----//////////
+*-------//////////////-------Menssagens Base64 do Remetente-------//////////////----------/////
+*---/////////////////////////////////////////////////////////////////////////////////////-----//
+*/
+
+#chat .messages .file-message-this{
+    position: relative;
+    display: flex;
+    flex-wrap: wrap;
+    align-content: flex-end;
+    margin-bottom: 110px;
+    flex-direction: column;
+    width: 90%;
+    height: 50%;
+}
+
+#chat .messages .file-message-this .content{
+    position: relative;
+    margin-left: 0;
+    width: 200px;
+}
+
+#chat .messages .file-message-this .content img{
+    position: relative;
+    width: 30px;
+    height: 30px;
+    left: 95%;
+    border: 1px solid #fff;
+    border-radius: 25px;
+}
+
+#chat .messages .file-message-this .content .user {
+    position: absolute;
+    color:#fff;
+    left: 65%;
+    top: 80%;
+}
+
+#chat .messages .file-message-this .content .message-box{
+    position: relative;
+    width: 100px;
+    height: 120px;
+}
+
+#chat .messages .file-message-this .content .message-box .message{
+    background: rgba(100, 250, 100, 0.9);
+    width: 100px;
+    height: 120px;
+}
 /*screen*/
 
 @media screen and (max-width: 620px) {

@@ -150,19 +150,26 @@
         */
         socket.on('messages', function (messages) {
             //console.log("osvijb")
-            //console.log(message)
             for (let message of messages) {
                 //console.log(message);
                 if (user.length != 0) {
                     //case id of message equals to id previous message, so return false
                     //if (message.id !== idMessage) {
-                    //console.log(message);
+                    //console.log(message.message.userID +' '+message.message.userSendID);
                     if ((message.message.userID === currentSender && message.message.userSendID === user) ||
                         (message.message.userID === user && message.message.userSendID === currentSender)) {
-                            if(message.type === "old_message" || message.type === "new_message")
+                            //-------------//////------------
+                            //Renderiza menssagens de textos
+                            //---------/////////////---------
+                            if(message.type === "old_message" || message.type === "new_message"){
                                 renderMessage(message.message);
-                            else if(message.type === "old_64_message" || message.type === "new_64_message")
-                                renderMessageB64(message.message)
+                            }
+                            //---------////////////----------
+                            //Renderiza menssagens base64
+                            //--------////////////----------
+                            else if(message.type === "old_64_message" || message.type === "new_64_message"){
+                                controllerB64(message.message)
+                            }
                             
                             //console.log(message.type);
                     }
@@ -229,45 +236,116 @@
                     }
                 }   
         }
-        //
-        //the function that put messages on the screen
-        //
-        //
-        function renderMessageB64(message) {
-            //Verifica se a menssagem é do usuário ou do destinatário
-            if (message.userID === user) {
-                //
-                var img = new Image();
-                img.className = "file-message";
-                img.src = 'data:image/jpg;base64,'+message.message;
+        /***
+         * ---------/////////////---------
+         * Direciona os aquivos base64 
+         * ----------/////////------
+         */
 
-                if (message.userID === user) {
+        function controllerB64(message){
+            //----------//////////////-------
+            //          Caso seja imagem
+            //---------/////////////------
+            if( message.ext.toLowerCase() === "jpg"  || 
+                message.ext.toLowerCase() === "png"  ||
+                message.ext.toLowerCase() === "jpge" ||
+                message.ext.toLowerCase() === "gfi"  ||
+                message.ext.toLowerCase() === "webp" ){
+                    //metodo
+                    renderImagesB64(message);
+            }
+            //----------//////////////-------
+            //          Caso seja imagem
+            //---------/////////////------
+            else if( message.ext.toLowerCase() === "mp4"  || 
+                message.ext.toLowerCase() === "avi"  ||
+                message.ext.toLowerCase() === "webm" ||
+                message.ext.toLowerCase() === "3gp"){
+                    //metodo
+                    renderVideosB64(message);
+            }
+        }
+
+        /**
+        *--------------/////////-----------------
+        *Renderiza as imagens do servidor
+        *----------------///-----------------
+        **/
+        function renderImagesB64(message) {
+            //Verifica se a menssagem é do usuário ou do destinatário
+            var img = new Image();
+            img.className = "file-message";
+            img.src = 'data:image/'+message.ext+';base64, '+message.message;
+
+            if (message.userID === user) {
                 $('.messages').append(
                     '<section class="file-message-this">' +
-                    '<div class="content">' +
-                    '<div class="message-box">' +
-                    '<img class="message" src="data:image/jpg;base64,'+ message.message + '"/>' +
-                    '</div>' +
-                    '<img src="src/user-icon.png"/>' +
-                    '<div class="user"> você </div>' +
-                    '</div>' +
+                        '<div class="content">' +
+                            '<div class="message-box">' +
+                                '<img class="message" src="data:image/'+message.ext+';base64,'+ message.message + '"/>' +
+                            '</div>' +
+                            '<img src="src/user-icon.png"/>' +
+                            '<div class="user"> você </div>' +
+                        '</div>' +
                     '</section>');
             }
             else {
                 $('.messages').append(
                     '<section class="file-message-another">' +
-                    '<div class="content">' +
-                    '<img src="src/user-icon.png"/>' +
-                    '<div class="message-box">' +
-                    '<img class="message" src="data:image/jpg;base64,'+ message.message + '"/>' +
-                    '</div>' +
-                    '<div class="user">' + message.userID + '</div>' +
-                    '</div>' +
+                        '<div class="content">' +
+                            '<div class="message-box">' +
+                                '<img class="message" src="data:image/'+message.ext+';base64,'+ message.message + '"/>' +
+                            '</div>' +
+                            '<img src="src/user-icon.png"/>' +
+                            '<div class="user">' + message.userID + '</div>' +
+                        '</div>' +
                     '</section>');
             }
+            //
+            //
+            //
+            let messagesDiv = document.querySelector('.messages');
+            messagesDiv.scrollTop = messagesDiv.scrollHeight;
+            if(message.userSendID === user && message.message_status == 2){
+                //Muda o status da menssagem com visto
+                newStatus = {id:message.id,status:3}
+                socket.emit('setStatus', newStatus);
             }
-            else{
-                
+        }
+        /**
+        *--------------/////////-----------------
+        *Renderiza os videos do servidor
+        *----------------///-----------------
+        **/
+        function renderVideosB64(message) {
+            //Verifica se a menssagem é do usuário ou do destinatário
+            var img = new Image();
+            img.className = "file-message";
+            img.src = 'data:image/'+message.ext+';base64, '+message.message;
+
+            if (message.userID === user) {
+                $('.messages').append(
+                    '<section class="file-message-this">' +
+                        '<div class="content" id="content-video">' +
+                            '<div class="message-box">' +
+                                '<video class="message" src="data:video/'+message.ext+';base64,'+ message.message + '"/>' +
+                            '</div>' +
+                            '<img src="src/user-icon.png"/>' +
+                            '<div class="user"> você </div>' +
+                        '</div>' +
+                    '</section>');
+            }
+            else {
+                $('.messages').append(
+                    '<section class="file-message-another">' +
+                        '<div class="content">' +
+                            '<div class="message-box">' +
+                                '<video class="message" src="data:video/'+message.ext+';base64,'+ message.message + '"/>' +
+                            '</div>' +
+                            '<img src="src/user-icon.png"/>' +
+                            '<div class="user">' + message.userID + '</div>' +
+                        '</div>' +
+                    '</section>');
             }
             //
             //
@@ -287,13 +365,12 @@
          */
          socket.on('send-now', function (message) { 
             //Verifica se pro remetente atual
-            console.log(message);
             if ((message.userID === currentSender && message.userSendID === user) ||
                 (message.userID === user && message.userSendID === currentSender)){
                     if(message.message_type === "TEXT")
                         renderMessage(message);
                     else {
-                        renderMessageB64(message);
+                        controllerB64(message);
                     }
             }
             else {
@@ -301,7 +378,10 @@
             }
             idMessage = message.id;
         });
-        //config the senders section
+        /*-----------///////////////----------------
+        *-Recebe os Destinatários
+        *-------------//////////-----------
+        ---------*/
         socket.on('senders', function (message) {
             $('#usersend').empty();
             let c = 0;
@@ -352,7 +432,7 @@
                         if(message.message_type === "TEXT")
                             renderMessage(message);
                         else
-                            renderMessageB64(message);
+                            controllerB64(message);
                     }
                 }
             }

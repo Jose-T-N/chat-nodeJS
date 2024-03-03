@@ -355,30 +355,92 @@ anoter user
     width: 200px;
 }
 
-#chat .messages .file-message-this .content img{
+#chat .messages .file-message-this .content img, video{
     position: relative;
     width: 30px;
     height: 30px;
+    top: 0%;
     left: 95%;
     border: 1px solid #fff;
     border-radius: 25px;
 }
 
 #chat .messages .file-message-this .content .user {
-    position: absolute;
+    display: inline-block;
+    position: relative;
     color:#fff;
-    left: 65%;
-    top: 80%;
+    left: 58%;
+    bottom: 8%;
 }
 
 #chat .messages .file-message-this .content .message-box{
     position: relative;
+    left: 10%;
     width: 100px;
     height: 120px;
+    margin-bottom: 3%;
 }
 
 #chat .messages .file-message-this .content .message-box .message{
-    background: rgba(100, 250, 100, 0.9);
+    background: rgba(0, 0, 0, 0.9);
+    width: 100px;
+    height: 120px;
+}
+/**
+*Só para vidéos
+*/
+#chat .messages .file-message-this #content-video .message-box {
+    position: relative;
+    width: 100px;
+    height: 120px;
+    left: 55%;
+}
+/*
+*-///--////////////////////////////////////////////////////////////////////----//////////
+*-------//////////////-------Menssagens Base64 do Destinatário-------//////////////----------/////
+*---/////////////////////////////////////////////////////////////////////////////////////-----//
+*/
+
+#chat .messages .file-message-another{
+    position: relative;
+    display: flex;
+    flex-wrap: wrap;
+    align-content: flex-start;
+    margin-bottom: 110px;
+    flex-direction: column;
+    width: 90%;
+    height: 50%;
+}
+
+#chat .messages .file-message-another .content{
+    position: relative;
+    margin-left: 0;
+    width: 200px;
+}
+
+#chat .messages .file-message-another img, video{
+    position: relative;
+    width: 30px;
+    top: 0%;
+    left:-5%;
+    border: 1px solid #fff;
+    border-radius: 25px;
+}
+#chat .messages .file-message-another .user{
+    display: inline-block;
+    position: relative;
+    color:#fff;
+    left: 1%;
+    bottom: 5%;
+}
+
+#chat .messages .file-message-another .content .message-box{
+    margin-left: 0%;
+    width: 85%;
+}
+
+#chat .messages .file-message-another .content .message-box .message{
+    background: rgba(0, 0, 0, 0.9);
     width: 100px;
     height: 120px;
 }

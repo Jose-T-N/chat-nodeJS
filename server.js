@@ -249,7 +249,7 @@ io.on('connection', socket => {
                     allMessages.sort(function(a,b){return a.message.date - b.message.date});
                     socket.emit('messages', allMessages);
                     
-                    console.log(allMessages[0].message);
+                    //console.log(allMessages[0].message);
 
                 
             } else if (data.page === 'index') {
@@ -335,9 +335,25 @@ io.on('connection', socket => {
                         userID: data.userID,
                         userSendID: data.userSendID,
                         message: data.base64,
-                        ext: data.ext
+                        ext: data.ext,
+                        message_type: "BASE64"
                     }
+                    //Devouve o arquivo para o Remetente
                     socket.emit('send-now', sendData);
+                    for (let i = 0; i < users_connected.length; i++) {
+                        //envia a menssage para o destinatário
+                        if (data.userSendID === users_connected[i].user) {
+                            const sendData = {
+                                userID: data.userID,
+                                userSendID: data.userSendID,
+                                message: data.base64,
+                                ext: data.ext,
+                                message_type: "BASE64"
+                            }
+                            await socket.broadcast.to(users_connected[i].id).emit('send-now', sendData);
+                            break;
+                        }
+                    }
                 }
             })();
         });

@@ -343,7 +343,7 @@ anoter user
     display: flex;
     flex-wrap: wrap;
     align-content: flex-end;
-    margin-bottom: 110px;
+    margin-bottom: 80px;
     flex-direction: column;
     width: 90%;
     height: 50%;
@@ -395,6 +395,30 @@ anoter user
     height: 120px;
     left: 55%;
 }
+
+/**
+*Só para audio
+*/
+#chat .messages .file-message-this #content-audio .message-box {
+    position: relative;
+    width: 200px;
+    margin-bottom: 0px;
+    height: 100px;
+}
+
+#chat .messages .file-message-this #content-audio img {
+    bottom: 100%;
+}
+
+#chat .messages .file-message-this #content-audio .message-box .message {
+    width: 200px;
+    height: 100px;
+    position: relative;
+    background: transparent;
+    margin-bottom: 0;
+    padding: 0;
+}
+
 /*
 *-///--////////////////////////////////////////////////////////////////////----//////////
 *-------//////////////-------Menssagens Base64 do Destinatário-------//////////////----------/////
@@ -444,6 +468,21 @@ anoter user
     width: 100px;
     height: 120px;
 }
+
+/**
+*Só para audio
+*/
+#chat .messages .file-message-another #content-audio .message-box {
+    position: relative;
+}
+
+#chat .messages .file-message-another #content-audio .message-box .message {
+    width: 200px;
+    height: 100px;
+    position: relative;
+    background: transparent;
+}
+
 /*screen*/
 
 @media screen and (max-width: 620px) {

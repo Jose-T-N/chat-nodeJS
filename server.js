@@ -384,7 +384,12 @@ function fileToBase64(file){
         file.message = contents;
         bases64.push(file);
     }*/
+   if (fs.existsSync(path)) {
     return  fs.readFileSync(file, {encoding: 'base64'});
+   }
+   else{
+    return undefined;
+   }
 }
 
 server.listen(3000, function () {

@@ -127,16 +127,23 @@
         //
         function renderMessage(message) {
             contMsg++;
+             //verifica a data
+                setDate(message);
+                //pega a hora
+                let hour = getHour(message);
             if (message.userID === user) {
+
                 $('.messages').append(
                     '<section class="message-this">' +
                     '<div class="content">' +
                     '<img src="src/user-icon.png"/>' +
                     '<div class="message-box">' +
                     '<div class="message">' + message.message + '</div>' +
-                    '</div>' +
-                    '<div class="user"> você </div>' +
-                    '</div>' +
+                    '</div>'+
+                    '<div class="user-and-hour >' +
+                        '<span class="user"> você </span>' +
+                        '<span class="hour"> '+hour+' </span>' +
+                    '</div>'+
                     '</section>');
             }
             else {
@@ -146,9 +153,10 @@
                     '<img src="src/user-icon.png"/>' +
                     '<div class="message-box">' +
                     '<div class="message">' + message.message + '</div>' +
-                    '</div>' +
-                    '<div class="user">' + message.userID + '</div>' +
-                    '</div>' +
+                    '<div class="user-and-hour >' +
+                        '<span class="user"> '+message.userID+' </span>' +
+                        '<span class="hour"> '+hour+' </span>' +
+                    '</div>'+
                     '</section>');
             }
             let messagesDiv = document.querySelector('.messages');
@@ -709,6 +717,36 @@
             reader.readAsDataURL(blob);
 
         }
+    //Imprime a date na tela
+    //dividindo as menssagens por data
+    //Date que apare na tela de messagem
+    let currentDate = "";
+    function setDate(message){ 
+        //date contida ne messagem
+        let date = new Date(message.date);
+        //data de menssagem corrida
+        messageDate = date.getDate()+"/"+date.getMonth()+"/"+date.getFullYear();
+        //se a da messgem for difente da data corrente 
+        //outra data é imprimida
+        if(messageDate != currentDate){
+            //salva a nova data
+            currentDate = messageDate;
+            //imprime a data
+            $('.messages').append('<div class="currentData">'+currentDate+'</div>');
+
+        }
+
+        return date;
+
+    }
+    //Pega a hora de envio da menssagem
+    function getHour(message){
+        let date = setDate(message);
+        //hora da menssagem
+        let hour = date.getHours() + ":"+date.getMinutes();
+
+        return hour;
+    }
 
     </script>
 

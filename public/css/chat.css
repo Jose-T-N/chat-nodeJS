@@ -261,10 +261,16 @@ messages
     border: 1px solid #fff;
     border-radius: 25px;
 }
-#chat .messages .message-this .content .user {
+#chat .messages .message-this .content .user-and-hour {
     position: absolute;
     color:#fff;
-    left: 65%;
+    right: 20%;
+    display: flex;
+    flex-direction: row;
+}
+
+#chat .messages .message-this .content .user-and-hour span{
+    margin-left: 10%;
 }
 
 #chat .messages .message-this .content .message-box{
@@ -311,10 +317,18 @@ anoter user
     border: 1px solid #fff;
     border-radius: 25px;
 }
-#chat .messages .message-another .content .user {
+#chat .messages .message-another .content .user-and-hour {
     position: absolute;
     color:#fff;
     left: 15%;
+    display: flex;
+    flex-direction: row;
+    width: auto;
+
+}
+
+#chat .messages .message-another .content .user-and-hour span{
+    margin-left: 10%;
 }
 
 #chat .messages .message-another .content .message-box{
@@ -365,13 +379,23 @@ anoter user
     border-radius: 25px;
 }
 
-#chat .messages .file-message-this .content .user {
-    display: inline-block;
-    position: relative;
+#chat .messages .file-message-this .content .user-and-hour {
+    position: absolute;
     color:#fff;
-    left: 58%;
-    bottom: 8%;
+    right: 15%;
+    display: flex;
+    flex-direction: row;
+    width: auto;
 }
+
+#chat .messages .file-message-this .content .user-and-hour span.hour{
+    margin-left: 10%;
+}
+
+#chat .messages .file-message-this .content .user-and-hour img{
+    margin-left: 30px;
+}
+
 
 #chat .messages .file-message-this .content .message-box{
     position: relative;
@@ -450,12 +474,15 @@ anoter user
     border: 1px solid #fff;
     border-radius: 25px;
 }
-#chat .messages .file-message-another .user{
-    display: inline-block;
-    position: relative;
+#chat .messages .file-message-another .content .user-and-hour {
+    position: absolute;
     color:#fff;
-    left: 1%;
-    bottom: 5%;
+    display: flex;
+    flex-direction: row;
+}
+
+#chat .messages .file-message-another .content .user-and-hour span{
+    margin-left: 10%;
 }
 
 #chat .messages .file-message-another .content .message-box{

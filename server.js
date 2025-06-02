@@ -26,6 +26,7 @@ const readable = require('stream').Readable;
 const fs = require("fs");
 
 const db = require('./db');
+const { fork } = require('child_process');
 //const { dir } = require('console');
 
 var users_connected = [];
@@ -384,8 +385,9 @@ function fileToBase64(file){
         file.message = contents;
         bases64.push(file);
     }*/
-   if (fs.existsSync(path)) {
+   if (fs.existsSync(file)) {
     return  fs.readFileSync(file, {encoding: 'base64'});
+    //console.log("foi");
    }
    else{
     return undefined;

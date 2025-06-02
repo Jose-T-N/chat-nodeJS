@@ -135,15 +135,16 @@
 
                 $('.messages').append(
                     '<section class="message-this">' +
-                    '<div class="content">' +
-                    '<img src="src/user-icon.png"/>' +
-                    '<div class="message-box">' +
-                    '<div class="message">' + message.message + '</div>' +
-                    '</div>'+
-                    '<div class="user-and-hour >' +
-                        '<span class="user"> você </span>' +
-                        '<span class="hour"> '+hour+' </span>' +
-                    '</div>'+
+                        '<div class="content">' +
+                            '<img src="src/user-icon.png"/>' +
+                            '<div class="message-box">' +
+                                '<div class="message">' + message.message + '</div>' +
+                            '</div>'+
+                            '<div class="user-and-hour">' +
+                                    '<span class="user"> você </span>' +
+                                    '<span class="hour"> '+hour+' </span>' +
+                            '</div>'+
+                        '</div>'+
                     '</section>');
             }
             else {
@@ -153,9 +154,10 @@
                     '<img src="src/user-icon.png"/>' +
                     '<div class="message-box">' +
                     '<div class="message">' + message.message + '</div>' +
-                    '<div class="user-and-hour >' +
+                    '<div class="user-and-hour">' +
                         '<span class="user"> '+message.userID+' </span>' +
                         '<span class="hour"> '+hour+' </span>' +
+                    '</div>'+
                     '</div>'+
                     '</section>');
             }
@@ -311,6 +313,11 @@
             img.className = "file-message";
             img.src = 'data:image/'+message.ext+';base64, '+message.message;
 
+            //verifica a data
+                setDate(message);
+                //pega a hora
+                let hour = getHour(message);
+
             if (message.userID === user) {
                 $('.messages').append(
                     '<section class="file-message-this">' +
@@ -318,8 +325,11 @@
                             '<div class="message-box">' +
                                 '<img class="message" src="data:image/'+message.ext.replace(".","")+';base64,'+ message.message + '"/>' +
                             '</div>' +
-                            '<img src="src/user-icon.png"/>' +
-                            '<div class="user"> você </div>' +
+                            '<div class="user-and-hour">' +
+                                '<img src="src/user-icon.png"/>' +
+                                '<span class="user"> você </span>' +
+                                '<span class="hour"> '+hour+' </span>' +
+                            '</div>'+
                         '</div>' +
                     '</section>');
             }
@@ -330,8 +340,11 @@
                             '<div class="message-box">' +
                                 '<img class="message" src="data:image/'+message.ext.replace(".","")+';base64,'+ message.message + '"/>' +
                             '</div>' +
-                            '<img src="src/user-icon.png"/>' +
-                            '<div class="user">' + message.userID + '</div>' +
+                            '<div class="user-and-hour">' +
+                                '<img src="src/user-icon.png"/>' +
+                        '<span class="user"> '+message.userID+' </span>' +
+                        '<span class="hour"> '+hour+' </span>' +
+                    '</div>'+
                         '</div>' +
                     '</section>');
             }
@@ -357,6 +370,11 @@
             img.className = "file-message";
             img.src = 'data:image/'+message.ext+';base64, '+message.message;
 
+            //verifica a data
+                setDate(message);
+                //pega a hora
+                let hour = getHour(message);
+
             if (message.userID === user) {
                 $('.messages').append(
                     '<section class="file-message-this">' +
@@ -364,8 +382,11 @@
                             '<div class="message-box">' +
                                 '<video class="message" src="data:video/'+message.ext.replace(".","")+';base64,'+ message.message + '"/>' +
                             '</div>' +
-                            '<img src="src/user-icon.png"/>' +
-                            '<div class="user"> você </div>' +
+                            '<div class="user-and-hour">' +
+                                '<img src="src/user-icon.png"/>' +
+                                '<span class="user"> você </span>' +
+                                '<span class="hour"> '+hour+' </span>' +
+                            '</div>'+
                         '</div>' +
                     '</section>');
             }
@@ -376,8 +397,11 @@
                             '<div class="message-box">' +
                                 '<video class="message" src="data:video/'+message.ext.replace(".","")+';base64,'+ message.message + '"/>' +
                             '</div>' +
-                            '<img src="src/user-icon.png"/>' +
-                            '<div class="user">' + message.userID + '</div>' +
+                            '<div class="user-and-hour">' +
+                                '<img src="src/user-icon.png"/>' +
+                        '<span class="user"> '+message.userID+' </span>' +
+                        '<span class="hour"> '+hour+' </span>' +
+                    '</div>'+
                         '</div>' +
                     '</section>');
             }
@@ -403,6 +427,11 @@
             img.className = "file-message";
             img.src = 'data:image/'+message.ext+';base64, '+message.message;
 
+            //verifica a data
+                setDate(message);
+                //pega a hora
+                let hour = getHour(message);
+
             if (message.userID === user) {
                 $('.messages').append(
                     '<section class="file-message-this">' +
@@ -412,8 +441,11 @@
                                     '<source src="data:audio/'+message.ext.replace(".","")+';base64,'+ message.message + '"/>'+
                                 '</audio>'+
                             '</div>' +
-                            '<img src="src/user-icon.png"/>' +
-                            '<div class="user"> você </div>' +
+                            '<div class="user-and-hour">' +
+                                '<img src="src/user-icon.png"/>' +
+                                '<span class="user"> você </span>' +
+                                '<span class="hour"> '+hour+' </span>' +
+                            '</div>'+
                         '</div>' +
                     '</section>');
             }
@@ -426,8 +458,11 @@
                                     '<source src="data:audio/'+message.ext.replace(".","")+';base64,'+ message.message + '"/>'+
                                 '</audio>'+
                             '</div>' +
-                            '<img src="src/user-icon.png"/>' +
-                            '<div class="user">' + message.userID + '</div>' +
+                            '<div class="user-and-hour">' +
+                                '<img src="src/user-icon.png"/>' +
+                        '<span class="user"> '+message.userID+' </span>' +
+                        '<span class="hour"> '+hour+' </span>' +
+                    '</div>'+
                         '</div>' +
                     '</section>');
             }

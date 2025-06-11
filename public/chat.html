@@ -759,15 +759,21 @@
     function setDate(message){ 
         //date contida ne messagem
         let date = new Date(message.date);
+        //caso o dia só tem um digito 
+        //é adicionado um 0 na frente
+        let day =   String(date.getDate()).length == 1 ? "0" + date.getDate() : date.getDate();
+        //caso o mês só tem um digito 
+        //é adicionado um 0 na frente
+        let month =   String(date.getMonth()).length == 1 ? "0" + date.getMonth() : date.getMonth();  
         //data de menssagem corrida
-        messageDate = date.getDate()+"/"+date.getMonth()+"/"+date.getFullYear();
+        messageDate = day+"/"+month+"/"+date.getFullYear();
         //se a da messgem for difente da data corrente 
         //outra data é imprimida
         if(messageDate != currentDate){
             //salva a nova data
             currentDate = messageDate;
             //imprime a data
-            $('.messages').append('<div class="currentData">'+currentDate+'</div>');
+            $('.messages').append('<div class="current_data">'+currentDate+'</div>');
 
         }
 
@@ -782,6 +788,58 @@
 
         return hour;
     }
+    /**
+    Fixa as data das menssagen referntes no top
+    */
+    function fixDate(){
+        //salva a posição original do elemento
+        let datesElements = [];
+        let cont = 0;
+        //Evento do scroll
+        $(".messages").on("scroll",function(){
+            //posição do scroll
+            let scrollMessages = $(this).scrollTop();
+            //Elementos das datas
+            $(".current_data").each(function(){
+                //pega as classes do elemento
+                const clases = $(this).attr('class');
+                //Verifica se o elemeto já está configurado
+                //caso já exista a classe 'fixed-date'
+                if(!clases.includes('fixed-date')){
+                    //Traz a posição relativa so elemeto
+                    const element = $(this);
+                    const rect = element[0].getBoundingClientRect();
+                    const container = $('.messages');
+                    const containerTop = container.offset().top;
+                    const containerScrollTop = container.scrollTop();
+                    //Posição relativa
+                    let pos = rect.top - containerTop + containerScrollTop;
+                    //Texto do elemento
+                    let text = element.text().replaceAll('/','-');
+                    //Salva a data como refencia para o elemento
+                    //e sua posição
+                    datesElements[cont] = {date:text,position:pos};
+                    cont++;
+                    //Compara a posição do elemento com a do scroll
+                    if(scrollMessages >= pos){
+                        //Coloca a classe para o elento receber 
+                        //as configurações
+                        $(this).addClass("fixed-date");
+                        $(this).addClass(text);
+                    }
+                }
+            });
+            //Verificar os elemetos que estão fixados no topo
+            for(e of datesElements){
+                if(scrollMessages <= e.position){
+                    const finder = "."+e.date;
+                    $(finder).removeClass("fixed-date");
+                }
+            }
+        });
+    }
+
+    fixDate();
 
     </script>
 

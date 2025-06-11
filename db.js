@@ -1,7 +1,19 @@
+
 const util = require('util');
 const dt   = require('./DataTime');
+const {Pool} = require('pg');
 
-//create connect in mysqul and create databese if not exists
+
+
+const pool = new Pool({
+  connectionString: process.env.DATABASE_URL,
+  ssl: {
+    rejectUnauthorized: false,
+  },
+});
+
+pool.connect()
+/*
 async function createDB(){
  
     const mysql = require('mysql2/promise');
@@ -31,7 +43,7 @@ async function connect(){
  * -------------- Criação de tabelas ----------
  *  
  * 
- */
+ *
 //create tables users and messages
 async function createTables(){
     const conn = await connect();
@@ -79,7 +91,7 @@ async function createTables(){
  * --------------------- Adicionar linhas ----------------
  * 
  * 
- */
+ *
 async function addUser(user,passwd){
     const conn = await connect();
     result = '';
@@ -116,7 +128,7 @@ async function addMessage(user,sdUser,msg,date_time,status_message,message_type)
  * ------------------------------Buscas--------------------------
  * 
  * 
- */
+ *
 
 //find expecific user
 async function findUser(user){
@@ -216,7 +228,7 @@ async function findMessageforDateAndSendUser(senduser){
  * 
  * 
  * 
- */
+ *
 
 //mudar estatus da menssagem
 async function setStatus(id, status_message){
@@ -229,10 +241,12 @@ async function setStatus(id, status_message){
  * 
  * ------------------------- Construtor -----------
  * 
- */
+ *
 (async () => {
     await createDB();
     let result = await createTables();
 })();
 
 module.exports = {createDB,createTables,addUser,addMessage,findUser,allUser,findTextMessages,allMessage,findMessageforDate,findMessageforDateAndUser,findMessageforDateAndSendUser,setStatus,findSpecificMsg,findNewsTextMessage,findBase64Messages,findNewsBase64Messages};
+
+*/

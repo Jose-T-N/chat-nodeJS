@@ -112,7 +112,10 @@ div[contenteditable=true] {
     text-align: center;
 }
 
-/*Tela de chat*/
+/* ------------------------------------------------------
+--------------------------Tela Principal de chat----------
+------------------------------------------------------
+*/
 #chat {
     display: block;
     border: 1px solid #777;
@@ -125,6 +128,7 @@ div[contenteditable=true] {
     position: absolute;
     left: 33%;
     top:5%;
+    z-index: 0;
 }
 
 #chat .baseboard{
@@ -202,7 +206,13 @@ div[contenteditable=true] {
     color:#fff;
 }
 
+/*
+-----------------------------------------------------------
+------------------------ div de menssagens ------------------
+--------------------------------------------------------------
+*/
 #chat .messages {
+    position: relative;
     display: block;
     left: 0;
     top: 0;
@@ -509,6 +519,29 @@ anoter user
     position: relative;
     background: transparent;
 }
+
+/*----------------------------------------------------------------------
+--------------------------------Datas fixadas----------------------------
+---------------------------------------------------------------------------*/
+#chat .messages .current_data.fixed-date{
+    position: sticky;
+    top: -5%;
+    z-index: 1;
+    
+}
+
+#chat .messages .current_data{
+    position: relative;
+    width: 30%;
+    background-color: #777;
+    left: 30%;
+    padding: 5px;
+    border: #777 1px solid;
+    border-radius: 10px;
+    text-align: center;
+    letter-spacing: 2px;
+}
+
 
 /*screen*/
 

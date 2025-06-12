@@ -2,11 +2,11 @@
 const util = require('util');
 const dt   = require('./DataTime');
 require("dotenv").config();
-const {Pool} = require('pg');
+const {Client} = require('pg');
 
 console.log(process.env.PG_USER);
 
-const pool = new Pool({
+const pool = new Client({
          host: process.env.PG_HOST,
          user: process.env.PG_USER,
          password: process.env.PG_PASSWORD,

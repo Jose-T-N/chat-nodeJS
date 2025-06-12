@@ -1,18 +1,23 @@
 
 const util = require('util');
 const dt   = require('./DataTime');
+require("dotenv").config();
 const {Pool} = require('pg');
 
-
+console.log(process.env.PG_USER);
 
 const pool = new Pool({
-  connectionString: process.env.DATABASE_URL,
-  ssl: {
-    rejectUnauthorized: false,
-  },
-});
+         host: process.env.PG_HOST,
+         user: process.env.PG_USER,
+         password: process.env.PG_PASSWORD,
+         port: process.env.PG_PORT,
+         database: process.env.PG_DATABASE,
+         keepAlive:true,
+        connectionTimeoutMillis:0
+     });
 
-pool.connect()
+pool.connect();
+
 /*
 async function createDB(){
  

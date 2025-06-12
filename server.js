@@ -392,6 +392,6 @@ function fileToBase64(file){
     return undefined;
    }
 }
-server.listen(process.env.PORT, function () {
+server.listen(3000, function () {
     console.log('listen on port 3000');
 });

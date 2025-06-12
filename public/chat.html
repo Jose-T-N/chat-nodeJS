@@ -511,15 +511,15 @@
                 let html = '<li>'+
                             '<img src="src/user-icon.png" class="img">'
                             +'<h3>' 
-                            + message.user 
+                            + message.userid
                             + '</h3>'
-                            +'<div class="messages-another-users" data-name="'+message.user+'" style="display: none">'
+                            +'<div class="messages-another-users" data-name="'+message.userid+'" style="display: none">'
                             +'<div class="another-message"></div>'
                             +'</div>'
                             +'</li>';
-                if (message.user !== user) {
+                if (message.userid !== user) {
                     $(".senders").append(html);
-                    all_users.push(message.user);
+                    all_users.push(message.userid);
                 }
             }
             //case alone exists one user

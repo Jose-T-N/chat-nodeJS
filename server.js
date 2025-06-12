@@ -37,6 +37,8 @@ app.set('views', path.join(__dirname, 'public'));
 app.engine('html', require('ejs').renderFile);
 app.set('view engine', 'html');
 
+require("dotenv").config();
+
 io.on('connection', socket => {
     /*let messageObject = {
         user: user_connected
@@ -126,32 +128,29 @@ io.on('connection', socket => {
                 //Pesquisas as menssagens
                 //se o usuário atua for o primeiro
                 if (all_user != 0)
-                    if (all_user[0].user === data.user) {
+                    if (all_user[0].userid === data.userID) {
                         //Verifica se só tem um usuário no servidor
                         if (all_user.length == 1) {
                             //Verifica se a novas messagens para o usuário recem logado
-                            newMessages = await db.findNewsTextMessage(data.user,all_user[0].user);
-                            messages = await db.findTextMessages(data.user, all_user[0].user);
-                            messages64 = await db.findBase64Messages(data.user, all_user[0].user);
-                            newMessages64 = await db.findNewsBase64Messages(data.user, all_user[0].user);
+                            newMessages = await db.findNewsTextMessage(data.user,all_user[0].userid);
+                            messages = await db.findTextMessages(data.user, all_user[0].userid);
+                            messages64 = await db.findBase64Messages(data.user, all_user[0].userid);
+                            newMessages64 = await db.findNewsBase64Messages(data.user, all_user[0].userid);
                             
-                            //console.log(newMessages);
                         }
                         else {
                             //Verifica se a novas messagens para o usuário recem logado
-                            newMessages = await db.findNewsTextMessage(data.user, all_user[1].user);
-                            messages = await db.findTextMessages(data.user, all_user[1].user);
-                            messages64 = await db.findBase64Messages(data.user, all_user[1].user);
-                            newMessages64 = await db.findNewsBase64Messages(data.user, all_user[1].user);
-                            //console.log(newMessages);
+                            newMessages = await db.findNewsTextMessage(data.user, all_user[1].userid);
+                            messages = await db.findTextMessages(data.user, all_user[1].userid);
+                            messages64 = await db.findBase64Messages(data.user, all_user[1].userid);
+                            newMessages64 = await db.findNewsBase64Messages(data.user, all_user[1].userid);
                         }
                     } else {
                         //Verifica se a novas messagens para o usuário recem logado
-                        newMessages = await db.findNewsTextMessage(data.user, all_user[0].user);
-                        messages = await db.findTextMessages(data.user, all_user[0].user);
-                        messages64 = await db.findBase64Messages(data.user, all_user[0].user);
-                        newMessages64 = await db.findNewsBase64Messages(data.user, all_user[0].user);
-                        //console.log(newMessages);
+                        newMessages = await db.findNewsTextMessage(data.user, all_user[0].userid);
+                        messages = await db.findTextMessages(data.user, all_user[0].userid);
+                        messages64 = await db.findBase64Messages(data.user, all_user[0].userid);
+                        newMessages64 = await db.findNewsBase64Messages(data.user, all_user[0].userid);
                     }
                     //
                     // ------------------------/////////////////////////-----------------------

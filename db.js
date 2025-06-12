@@ -11,7 +11,10 @@ const conn = new Client({
          port: process.env.PG_PORT,
          database: process.env.PG_DATABASE,
          keepAlive:true,
-        connectionTimeoutMillis:0
+        connectionTimeoutMillis:0,
+        ssl: {
+            rejectUnauthorized: false,
+        },
      });
 
 conn.connect();

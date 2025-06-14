@@ -21,7 +21,7 @@ require("dotenv").config();
 
 const app = express();
 const server = require('http').createServer(app);
-const io = require('socket.io')(server, {maxHttpBufferSize: 1e8, pingTimeout: 60000,  origin:"http://localhost:5173"});
+const io = require('socket.io')(server, {maxHttpBufferSize: 1e8, pingTimeout: 60000});
 const readable = require('stream').Readable;
 const fs = require("fs");
 

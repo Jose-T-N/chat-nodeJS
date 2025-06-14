@@ -21,7 +21,7 @@ require("dotenv").config();
 
 const app = express();
 const server = require('http').createServer(app);
-const io = require('socket.io')(server, {maxHttpBufferSize: 1e8, pingTimeout: 60000});
+const io = require('socket.io')(server, {maxHttpBufferSize: 1e8, pingTimeout: 60000,  origin:"http://localhost:5173"});
 const readable = require('stream').Readable;
 const fs = require("fs");
 
@@ -32,12 +32,10 @@ const { fork } = require('child_process');
 var users_connected = [];
 const message_types = ["TEXT","BASE64"];
 
-app.use(express.static(path.join(process.cwd(), 'public'), {index: 'index.html'}));
+app.use(express.static(path.join(process.cwd(), 'public'), {index:'index.html'}));
 app.set('views', path.join(process.cwd(), 'public'));
 app.engine('html', require('ejs').renderFile);
 app.set('view engine', 'html'); 
-
-console.log(fs.existsSync(process.cwd()+"/public"));
 
 io.on('connection', socket => {
     /*let messageObject = {

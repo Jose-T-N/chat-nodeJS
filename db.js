@@ -2,7 +2,7 @@
 const util = require('util');
 const dt   = require('./DataTime');
 require("dotenv").config();
-const {Client} = require('pg');
+const {Client} = require('pg'); //asd
 
 const conn = new Client({
          host: process.env.PG_HOST,

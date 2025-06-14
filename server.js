@@ -37,7 +37,7 @@ app.set('views', path.join(process.cwd(), 'public'));
 app.engine('html', require('ejs').renderFile);
 app.set('view engine', 'html'); 
 
-console.log(process.cwd());
+console.log(fs.existsSync(process.cwd()+"/public"));
 
 io.on('connection', socket => {
     /*let messageObject = {

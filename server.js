@@ -33,8 +33,8 @@ const { fork } = require('child_process');
 var users_connected = [];
 const message_types = ["TEXT","BASE64"];
 
-app.use(express.static(path.join(__dirname, 'public')));
-app.set('views', path.join(__dirname, 'public'));
+app.use(express.static(path.join(process.cwd(), 'public')));
+app.set('views', path.join(process.cwd(), 'public'));
 app.engine('html', require('ejs').renderFile);
 app.set('view engine', 'html'); 
 

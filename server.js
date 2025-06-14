@@ -21,19 +21,19 @@ require("dotenv").config();
 
 const app = express();
 const server = require('http').createServer(app);
-//const io = require('socket.io')(server, {maxHttpBufferSize: 1e8, pingTimeout: 60000/*,  origin: "http://localhost:5173"*/});
+const io = require('socket.io')(server, {maxHttpBufferSize: 1e8, pingTimeout: 60000/*,  origin: "http://localhost:5173"*/});
 
 const readable = require('stream').Readable;
 const fs = require("fs");
 
-//const db = require('./db');
+const db = require('./db');
 const { fork } = require('child_process');
 //const { dir } = require('console');
 
 var users_connected = [];
 const message_types = ["TEXT","BASE64"];
 
-/*app.use(express.static(path.join(__dirname, 'public')));
+app.use(express.static(path.join(__dirname, 'public')));
 app.set('views', path.join(__dirname, 'public'));
 app.engine('html', require('ejs').renderFile);
 app.set('view engine', 'html'); 
@@ -43,7 +43,7 @@ io.on('connection', socket => {
         user: user_connected
     }
     user_connected = '';
-    socket.emit('previousMessages', messageObject);*
+    socket.emit('previousMessages', messageObject);*/
 
     socket.on('authentication', data => {
         (async () => {
@@ -305,7 +305,7 @@ io.on('connection', socket => {
      * /////////////////////////////////////////////////////////////////////////////////////
      * ---------///////////---------Recebe arquivos de base64----------//////////////------
      * ////////////////////////////////////////////////////////////////////////////////////
-     *
+     */
     socket.on('base64', data => {
         //console.log(data.user);
         //Cria um nome aleatório
@@ -391,6 +391,6 @@ function fileToBase64(file){
     return undefined;
    }
 }
-server.listen(3000, function () {
+/*server.listen(3000, function () {
     console.log('listen on port 3000');
-});
+});*/

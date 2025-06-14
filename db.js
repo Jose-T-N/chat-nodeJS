@@ -39,7 +39,7 @@ async function createDB(){
     await connection.query('CREATE DATABASE IF NOT EXISTS chat');
 
     console.log('Database Make');*/
-
+    conn.end();
 }
 
 /*connect in databese

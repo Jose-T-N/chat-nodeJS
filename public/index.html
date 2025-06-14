@@ -36,7 +36,7 @@
     </div>
     <script type="text/javascript" src="/socket.i/socket.io.js"></script>
     <script type="text/javascript">
-        var socket = io('wss://chat-node-js-jose-netos-projects-d437a5c7.vercel.app',{path: '/socket.io'});
+        var socket = io('https://localhost',{path: '/socket.io'});
 
         socket.emit('page-inform', {page:'index'});
 

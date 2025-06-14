@@ -10,8 +10,6 @@ const conn = new Client({
          password: process.env.PG_PASSWORD,
          port: process.env.PG_PORT,
          database: process.env.PG_DATABASE,
-         keepAlive:true,
-        connectionTimeoutMillis:0,
         ssl:true
      });
 
@@ -94,16 +92,14 @@ async function createTables(){
     await conn.query(messageTable, (err, result) => {
         if (err) {
             console.error('Error creating table:', err);
-            conn.end();
+            //conn.end();
         } else {
             console.log('Table created successfully.');
-            conn.end();
+            //conn.end();
             result2 = result;
         }
         //conn.end(); // Close the connection pool
     });
-
-    console.log("bla");
 
     return [result1,result2];
 }

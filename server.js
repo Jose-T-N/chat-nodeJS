@@ -17,6 +17,7 @@
 const express = require('express');
 const path = require('path');
 const dt = require('./DataTime');
+require("dotenv").config();
 
 const app = express();
 const server = require('http').createServer(app);
@@ -35,11 +36,10 @@ const message_types = ["TEXT","BASE64"];
 app.use(express.static(path.join(__dirname, 'public')));
 app.set('views', path.join(__dirname, 'public'));
 app.engine('html', require('ejs').renderFile);
-app.set('view engine', 'html');
-
-require("dotenv").config();
+app.set('view engine', 'html'); 
 
 io.on('connection', socket => {
+    console.log("bla");
     /*let messageObject = {
         user: user_connected
     }

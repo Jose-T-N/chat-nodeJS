@@ -39,7 +39,6 @@ async function createDB(){
     await connection.query('CREATE DATABASE IF NOT EXISTS chat');
 
     console.log('Database Make');*/
-    conn.end();
 }
 
 /*connect in databese
@@ -102,6 +101,8 @@ async function createTables(){
         //conn.end(); // Close the connection pool
     });
     return [result1,result2];
+
+    conn.end();
 
 }
 /**

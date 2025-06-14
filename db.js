@@ -69,7 +69,7 @@ async function createTables(){
 
     userTable = 'CREATE TABLE IF NOT EXISTS users (userID VARCHAR(20) NOT NULL, passwd VARCHAR(20) NOT NULL, PRIMARY KEY(userID));';
     
-    conn.query(userTable, (err, result) => {
+    await conn.query(userTable, (err, result) => {
         if (err) {
             console.error('Error creating table:', err);
         } else {
@@ -91,11 +91,13 @@ async function createTables(){
     +'FOREIGN KEY(userID) REFERENCES users(userID),'
     +'FOREIGN KEY(userSendID) REFERENCES users(userID));'
 
-    conn.query(messageTable, (err, result) => {
+    await conn.query(messageTable, (err, result) => {
         if (err) {
             console.error('Error creating table:', err);
+            conn.end();
         } else {
             console.log('Table created successfully.');
+            conn.end();
             result2 = result;
         }
         //conn.end(); // Close the connection pool

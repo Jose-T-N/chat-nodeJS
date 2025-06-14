@@ -245,5 +245,6 @@ async function setStatus(id, status_message){
 (async () => {
     await createDB();
     let result = await createTables();
+    console.log("bla");
 })();
 module.exports = {createDB,createTables,addUser,addMessage,findUser,allUser,findTextMessages,allMessage,findMessageforDate,findMessageforDateAndUser,findMessageforDateAndSendUser,setStatus,findSpecificMsg,findNewsTextMessage,findBase64Messages,findNewsBase64Messages};

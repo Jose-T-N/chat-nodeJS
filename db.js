@@ -121,7 +121,6 @@ async function addUser(user,passwd){
             result = error;
         }
     );
-    console.log(result);
     return result;
 }
 
@@ -245,6 +244,6 @@ async function setStatus(id, status_message){
 (async () => {
     await createDB();
     let result = await createTables();
-    console.log("bla");
+    //console.log( await allMessage());
 })();
 module.exports = {createDB,createTables,addUser,addMessage,findUser,allUser,findTextMessages,allMessage,findMessageforDate,findMessageforDateAndUser,findMessageforDateAndSendUser,setStatus,findSpecificMsg,findNewsTextMessage,findBase64Messages,findNewsBase64Messages};

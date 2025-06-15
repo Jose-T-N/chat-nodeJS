@@ -39,7 +39,9 @@ app.set('view engine', 'html');
 
 io.on('connection', socket => {
 
-    console.log("bla");
+    //-----------------------------------------------------------------
+    //--------------Pagina de Autentificação------------------------
+    //---------------------------------------------------------------
 
     socket.on('authentication', data => {
         (async () => {
@@ -66,11 +68,13 @@ io.on('connection', socket => {
             }
         })();
     });
-    //create user 
+    //---------------------------------------------------------
+    //------------------Rotina pra criar usúario-----------------
+    //----------------------------------------------------------
     socket.on('create-user', data => {
         (async () => {
             const result = await db.addUser(data.user, data.passwd);
-            console.log(result);
+            //console.log(result);
             if (result === 'ok') {
                 let messageObject = {
                     msg: 'user-create'
@@ -86,12 +90,14 @@ io.on('connection', socket => {
             }
         })();
     });
-    //receive, verify user and return message
+    //---------------------------------------------------------------------
+    //--------------quando uma menssagem é enviada-----------------------
+    //-------------------------------------------------------------------
     socket.on('sendMessage', data => {
         (async () => {
             //status 1 igual a salvo no servidor
             const result = await db.addMessage(data.userID, data.userSendID, data.message, dt.dateTime(),1,"TEXT");
-            //console.log(result);
+            console.log(result);
             if (result === 'ok') {
                 data = await db.findSpecificMsg(data.userID, data.userSendID, data.message, dt.dateTime(),1);
                 socket.emit('send-now', data[0]);
@@ -106,11 +112,16 @@ io.on('connection', socket => {
             }
         })();
     });
-    //verify page
+    //----------------------------------------------------------------
+    //---------------------Verifica que pagina o usúario está-----
+    //------------------------------------------------------------
     socket.on('page-inform', data => {
         (async () => {
-            //console.log(users_connected);
+            //----------------------------------------------
+            //-----caso o usúario estejá na página de chat.
+            //--------------------------------------------
             if (data.page === 'chat') {
+
                 let messages;
                 let newMessages;
                 let messages64;
@@ -120,32 +131,27 @@ io.on('connection', socket => {
                 //Envia os distinatatios para a pagina do cliente
                 const all_user = await db.allUser();
                 await socket.emit('senders', all_user);
-                //Pesquisas as menssagens
+                
+            } else if (data.page === 'index') {
+                //user = '';
+                //console.log(socket.id);
+            }
+        })()
+    });
+
+
+    socket.on('starting', data =>{
+        (async () =>{
+            //Pesquisas as menssagens
                 //se o usuário atua for o primeiro
-                if (all_user != 0)
-                    if (all_user[0].userid === data.userID) {
-                        //Verifica se só tem um usuário no servidor
-                        if (all_user.length == 1) {
-                            //Verifica se a novas messagens para o usuário recem logado
-                            newMessages = await db.findNewsTextMessage(data.user,all_user[0].userid);
-                            messages = await db.findTextMessages(data.user, all_user[0].userid);
-                            messages64 = await db.findBase64Messages(data.user, all_user[0].userid);
-                            newMessages64 = await db.findNewsBase64Messages(data.user, all_user[0].userid);
-                            
-                        }
-                        else {
-                            //Verifica se a novas messagens para o usuário recem logado
-                            newMessages = await db.findNewsTextMessage(data.user, all_user[1].userid);
-                            messages = await db.findTextMessages(data.user, all_user[1].userid);
-                            messages64 = await db.findBase64Messages(data.user, all_user[1].userid);
-                            newMessages64 = await db.findNewsBase64Messages(data.user, all_user[1].userid);
-                        }
-                    } else {
-                        //Verifica se a novas messagens para o usuário recem logado
-                        newMessages = await db.findNewsTextMessage(data.user, all_user[0].userid);
-                        messages = await db.findTextMessages(data.user, all_user[0].userid);
-                        messages64 = await db.findBase64Messages(data.user, all_user[0].userid);
-                        newMessages64 = await db.findNewsBase64Messages(data.user, all_user[0].userid);
+                    if (data.sender != null) {
+                        //console.log(data);
+                        newMessages = await db.findNewsTextMessage(data.user, data.sender);
+                        //console.log(all_user[0].userid);
+                        messages = await db.findTextMessages(data.user, data.sender);
+                        //console.log(data.user);
+                        messages64 = await db.findBase64Messages(data.user, data.sender);
+                        newMessages64 = await db.findNewsBase64Messages(data.user, data.sender);
                     }
                     //
                     // ------------------------/////////////////////////-----------------------
@@ -225,8 +231,8 @@ io.on('connection', socket => {
                         item = {
                             id : item.id,
                             message : fileToBase64(item.message),
-                            userID: item.userID,
-                            userSendID: item.userSendID,
+                            userid: item.userID,
+                            userSendid: item.userSendID,
                             date: item.date,
                             message_status: item.message_status,
                             message_type: item.message_type,
@@ -244,21 +250,17 @@ io.on('connection', socket => {
                     allMessages.sort(function(a,b){return a.message.date - b.message.date});
                     socket.emit('messages', allMessages);
                     
-                    //console.log(allMessages[0].message);
+                    console.log(allMessages);
 
-                
-            } else if (data.page === 'index') {
-                //user = '';
-                //console.log(socket.id);
-            }
         })()
-    });
+    })
+
     //action == 'findMessage'
     socket.on('findMessage', data => {
         (async () => {
             let messages = await db.findTextMessages(data.userID, data.userSendID);
             socket.emit('messages', messages);
-            //console.log(messages);
+            console.log(messages);
         })()
     });
     //action == 'findMessage'
@@ -266,7 +268,7 @@ io.on('connection', socket => {
         (async () => {
             let messages = await db.findNewsTextMessage(data.userID, data.userSendID);
             socket.emit('newsMessages', messages);
-            //console.log(messages);
+            console.log(messages);
         })()
     });
     //check if message arrived 

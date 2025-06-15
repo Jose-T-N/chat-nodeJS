@@ -32,6 +32,10 @@ const { dir } = require('console');
 var users_connected = [];
 const message_types = ["TEXT","BASE64"];
 
+app.use(cors({
+    origin: ["http://localhost:3000", "https://chat-node-js-eight.vercel.app/"],
+  }));
+
 app.use(express.static(path.join(process.cwd(), 'public'), {index:'index.html'}));
 app.set('views', path.join(process.cwd(), 'public'));
 app.engine('html', require('ejs').renderFile);

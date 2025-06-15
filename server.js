@@ -249,8 +249,6 @@ io.on('connection', socket => {
                     //-----////////////////////////-----
                     allMessages.sort(function(a,b){return a.message.date - b.message.date});
                     socket.emit('messages', allMessages);
-                    
-                    console.log(allMessages);
 
         })()
     })

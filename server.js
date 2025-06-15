@@ -21,7 +21,7 @@ require("dotenv").config();
 
 const app = express();
 const server = require('http').createServer(app);
-const io = require('socket.io')(server ,{path: '/socket.io',maxHttpBufferSize: 1e8, pingTimeout: 60000});
+const io = require('socket.io')(server ,{maxHttpBufferSize: 1e8, pingTimeout: 60000,});
 const readable = require('stream').Readable;
 const fs = require("fs");
 
@@ -40,11 +40,8 @@ app.engine('html', require('ejs').renderFile);
 app.set('view engine', 'html'); 
 
 io.on('connection', socket => {
-    /*let messageObject = {
-        user: user_connected
-    }
-    user_connected = '';
-    socket.emit('previousMessages', messageObject);*/
+
+    console.log("bla");
 
     socket.on('authentication', data => {
         (async () => {

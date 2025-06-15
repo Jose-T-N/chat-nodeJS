@@ -34,11 +34,11 @@
             </form>
         </div>
     </div>
-    <script type="text/javascript"></script>
-    <script type="text/javascript" src="/socket.io/socket.io.js">
-        var socket = io('https://localhost',{path: '/socket.io'});
+    <script type="text/javascript" src="/socket.io/socket.io.js"></script>
+    <script type="text/javascript">
+        var socket = io({origin:'*'});
 
-        socket.emit('page-inform', {page:'index'});
+        socket.emit('page-inform', {page:'index',origin:'*'});
 
         //login
         $('#login').submit(function (event) {

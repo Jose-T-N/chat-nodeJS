@@ -162,7 +162,7 @@
         socket.on('messages', function (messages) {
             for (let message of messages) {
                 if (user.length != 0) {
-                    console.log(message.message.usersendid);
+                    //console.log(message.message.usersendid);
                     //case id of message equals to id previous message, so return false
                     //if (message.id !== idMessage) {
                     //console.log(message.message.userID +' '+message.message.userSendID);
@@ -221,7 +221,7 @@
                 setDate(message);
                 //pega a hora
                 let hour = getHour(message);
-            if (message.userID === user) {
+            if (message.userid === user) {
 
                 $('.messages').append(
                     '<section class="message-this">' +
@@ -245,7 +245,7 @@
                     '<div class="message-box">' +
                     '<div class="message">' + message.message + '</div>' +
                     '<div class="user-and-hour">' +
-                        '<span class="user"> '+message.userID+' </span>' +
+                        '<span class="user"> '+message.userid+' </span>' +
                         '<span class="hour"> '+hour+' </span>' +
                     '</div>'+
                     '</div>'+
@@ -530,9 +530,10 @@
          * -////////////////////////////////////////////////////////////////////////////-------
          */
          socket.on('send-now', function (message) { 
+            console.log(message)
             //Verifica se pro remetente atual
-            if ((message.userID === currentSender && message.userSendID === user) ||
-                (message.userID === user && message.userSendID === currentSender)){
+            if ((message.userid === currentSender && message.usersendid === user) ||
+                (message.userid === user && message.usersendid === currentSender)){
                     if(message.message_type === "TEXT")
                         renderMessage(message);
                     else {
@@ -662,10 +663,10 @@
 
         });
 
-        //click event of sendes list
+        //-----------------------------------------------
+        //---------------Troco de Remente-----------------
+        //------------------------------------------
         function liClick() {
-
-            //console.log('sdfg');
 
             $(".senders li").removeAttr('style');
 

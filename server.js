@@ -21,7 +21,7 @@ require("dotenv").config();
 
 const app = express();
 const server = require('http').createServer(app);
-const io = require('socket.io')(server ,{origin : '*',maxHttpBufferSize: 1e8, pingTimeout: 60000,});
+const io = require('socket.io')(server ,{smaxHttpBufferSize: 1e8, pingTimeout: 60000,});
 const readable = require('stream').Readable;
 const fs = require("fs");
 
@@ -29,15 +29,8 @@ const db = require('./db');
 const { fork } = require('child_process');
 const { dir } = require('console');
 
-console.log(fs.existsSync('/socket.io'));
-
 var users_connected = [];
 const message_types = ["TEXT","BASE64"];
-
-app.use(path.join(process.cwd(), 'public'), function(req, res, next){
-  req.method = 'GET';
-  next();
-});
 
 app.use(express.static(path.join(process.cwd(), 'public'), {index:'index.html'}));
 app.set('views', path.join(process.cwd(), 'public'));

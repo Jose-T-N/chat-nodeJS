@@ -34,11 +34,11 @@
             </form>
         </div>
     </div>
-    <script type="text/javascript" src="/socket.io/socket.io.js"></script>
+    <!-- <script type="text/javascript" src="/socket.io/socket.io.js"></script>
     <script type="text/javascript">
 
-        //Configurações do soket.io
-        /*var socket = io('chat-node-c6uhxaa1w-jose-netos-projects-d437a5c7.vercel.app',{origin:'*',path:'/'});
+        //Configurações do soket
+        var socket = io();
 
         socket.emit('page-inform', {page:'index'});
 
@@ -85,7 +85,7 @@
                 let messageObject = {
                     action: 'username',
                     user: user
-                }*
+                }*/
 
                 //socket.emit('sendMessage', messageObject);
                 localStorage.setItem("user", $('#login input[name=user]').val().toUpperCase());
@@ -105,8 +105,8 @@
             else if (message.msg === 'user-exists') {
                 alert('Já esiste um usuário com esse nome');
             }
-        })*/
-    </script>
+        })
+    </script>-->
 </body>
 
 </html>

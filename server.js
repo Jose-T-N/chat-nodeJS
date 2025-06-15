@@ -21,7 +21,7 @@ require("dotenv").config();
 
 const app = express();
 const server = require('http').createServer(app);
-const io = require('socket.io')(server ,{origin : '*',maxHttpBufferSize: 1e8, pingTimeout: 60000,});
+//const io = require('socket.io')(server ,{origin : '*',maxHttpBufferSize: 1e8, pingTimeout: 60000,});
 const readable = require('stream').Readable;
 const fs = require("fs");
 
@@ -39,7 +39,7 @@ app.set('views', path.join(process.cwd(), 'public'));
 app.engine('html', require('ejs').renderFile);
 app.set('view engine', 'html'); 
 
-io.on('connection', socket => {
+/*io.on('connection', socket => {
 
     console.log("bla");
 
@@ -303,7 +303,7 @@ io.on('connection', socket => {
      * /////////////////////////////////////////////////////////////////////////////////////
      * ---------///////////---------Recebe arquivos de base64----------//////////////------
      * ////////////////////////////////////////////////////////////////////////////////////
-     */
+     *
     socket.on('base64', data => {
         //console.log(data.user);
         //Cria um nome aleatório

@@ -36,9 +36,11 @@
     </div>
     <script type="text/javascript" src="/socket.io/socket.io.js"></script>
     <script type="text/javascript">
-        var socket = io({origin:'*',path:'/'});
 
-        socket.emit('page-inform', {page:'index',origin:'*'});
+        //Configurações do soket.io
+        var socket = io('chat-node-c6uhxaa1w-jose-netos-projects-d437a5c7.vercel.app',{origin:'*',path:'/'});
+
+        socket.emit('page-inform', {page:'index'});
 
         //login
         $('#login').submit(function (event) {
